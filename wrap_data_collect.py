@@ -1,0 +1,64 @@
+import sys
+import pickle
+from bs4 import BeautifulSoup
+from tqdm import tqdm
+
+sys.path.append( "../" )
+
+import library as lib
+import data_manage as dm
+
+def wrap_get( url ):
+    result = {}
+    r, _ = lib.request( url )
+    soup = BeautifulSoup( r.content, "html.parser" )
+    
+    table_tag = soup.findAll( "table" )
+
+    for table in table_tag:
+        summary = table.get( "summary" )
+
+        if not summary == None \
+           and summary == "ラップタイム":
+            tr_tag = table.findAll( "tr" )
+            dist_data = tr_tag[0].findAll( "th" )
+            wrap_time = tr_tag[2].findAll( "td" )
+
+            for i in range( 0, len( dist_data ) ):
+                dist = dist_data[i].text.replace( "m", "" )
+                wrap = float( wrap_time[i].text )
+                result[dist] = wrap
+
+    return result
+
+def main():
+    result = dm.pickle_load( "wrap_data.pickle" )
+
+    if result == None:
+        result = {}
+    
+    base_url =  "https://race.netkeiba.com/race/result.html?race_id="
+    race_data = dm.pickle_load( "race_data.pickle" )
+
+    url_list = []
+    key_list = []
+
+    for k in race_data.keys():
+        race_id = lib.id_get( k )
+        url = base_url + race_id
+
+        try:
+            a = result[k]
+        except:            
+            url_list.append( url )
+            key_list.append( race_id )
+
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( wrap_get )
+
+    for k in add_data.keys():
+        result[k] = add_data[k]
+    
+    dm.pickle_upload( "wrap_data.pickle", result )
+
+main()
+
