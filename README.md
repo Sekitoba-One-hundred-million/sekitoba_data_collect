@@ -57,7 +57,7 @@ race_data.pickleから馬ごとの過去5レースの前半3Fのデータを収�
 ### horce_data_collect.py
 horce_url.pickleから調教師のURLと性別などの馬の情報を収集する。
 
-1. horce_url.pickle 
+1. horce_data.pickle 
    - [馬の名前]["sex"] = 性別
    - [馬の名前]["birth"] = 生まれ年
    - [馬の名前]["trainer"] = 調教師名
@@ -65,5 +65,38 @@ horce_url.pickleから調教師のURLと性別などの馬の情報を収集す�
    
 2. trainer_url.pickle
    - [調教師の名前] = 調教師のURL
+
+### horce_passing_collect.py
+horce_url.pickleから各コーナーの通過順位を収集する。
+1. passing_data.pickle
+   - [馬の名前][生年月日] = 通過順位の文字列 例:1-2-3-4
+
+### jockey_data.py
+jockey_name.pickleから騎手の年ごとの勝率,連対率,複勝率を収集する。
+1. jockey_data.pickle
+   - [騎手のURL][西暦] = [ 勝率, 連対率, 複勝率 ]
+
+### jockey_full_data_collect.py
+jockey_name.pickleから全てのレースの騎手の情報を収集する。
+1. jockey_full_data.pickle
+   - [騎手のURL][生年月日][レース番号]["place"] = 場所
+   - [騎手のURL][生年月日][レース番号]["weather"] = 天気
+   - [騎手のURL][生年月日][レース番号]["all_horce_num"] = 出走頭数
+   - [騎手のURL][生年月日][レース番号]["flame_num"] = 枠番
+   - [騎手のURL][生年月日][レース番号]["horce_num"] = 馬番
+   - [騎手のURL][生年月日][レース番号]["odds"] = オッズ
+   - [騎手のURL][生年月日][レース番号]["popular"] = 人気
+   - [騎手のURL][生年月日][レース番号]["rank"] = 順位
+   - [騎手のURL][生年月日][レース番号]["weight"] = 馬体重
+   - [騎手のURL][生年月日][レース番号]["dist"] = 距離
+   - [騎手のURL][生年月日][レース番号]["baba"] = 馬場
+   - [騎手のURL][生年月日][レース番号]["time"] = 走破タイム
+   - [騎手のURL][生年月日][レース番号]["diff"] = 着差
+
+### jockey_index_get.py
+jockey_full_data.pickle,race_money_data.picklerace_rank_data_average.pickle,race_rank_data_average.pickle,baba_index_data.pickle,standard_time.pickleから騎手の指数を計算する。
+計算式はコードを参照。(有効でない気がする)
+出力データなし
+
    
    
