@@ -1,8 +1,4 @@
-import sys
-
-sys.path.append( "../" )
-
-import library as lib
+import sekitoba_library as lib
 
 import requests
 import time

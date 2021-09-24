@@ -1,6 +1,3 @@
-import requests
-import pickle
-import sys
 import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup

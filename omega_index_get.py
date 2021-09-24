@@ -1,18 +1,10 @@
-import requests
-import pickle
-import sys
-import math
 import time
-import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.alert import Alert
 from selenium import webdriver
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 
 def data_get( driver, url, year, race_num, place ):

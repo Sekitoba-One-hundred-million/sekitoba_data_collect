@@ -1,14 +1,8 @@
-import requests
-import pickle
-import sys
-import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def money_get( url ):
     result = {}

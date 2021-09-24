@@ -1,19 +1,12 @@
-import requests
-import pickle
-import sys
-import math
-import numpy as np
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 #[ 勝率, 連対率, 複勝率 ]
 def data_collect( url ):    
-    r = requests.get( url )
+    r, _ = lib.request( url )
     soup = BeautifulSoup( r.content, "html.parser" )
     jockey_data = {}
     

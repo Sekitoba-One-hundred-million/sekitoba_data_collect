@@ -1,17 +1,8 @@
-import requests
-import pickle
-import sys
-import math
-import numpy as np
 from tqdm import tqdm
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
-import chardet
 
-sys.path.append( "../" )
-
-import data_manage as dm
-import library as lib
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def parent_data_get( urls ):
     result = {}

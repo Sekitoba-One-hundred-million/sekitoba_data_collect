@@ -1,10 +1,7 @@
 from bs4 import BeautifulSoup
-import sys
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def time_get( url ):
     r,_  = lib.request( url )

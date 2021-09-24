@@ -1,15 +1,10 @@
 import time
-import pickle
 from bs4 import BeautifulSoup
-from selenium.webdriver.common.alert import Alert
 from selenium import webdriver
 from tqdm import tqdm
-import sys
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def html_analyze( html ):
     result = {}

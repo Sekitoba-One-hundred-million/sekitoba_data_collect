@@ -1,10 +1,7 @@
-import sys
 from bs4 import BeautifulSoup
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def day_get( race_id ):
     result = {}

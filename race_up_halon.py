@@ -1,13 +1,10 @@
-import sys
 import time
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def first_time_get( soup, result ):
     count = 0
