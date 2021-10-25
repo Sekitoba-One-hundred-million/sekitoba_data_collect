@@ -49,7 +49,7 @@ def main():
         url = horce_url[k]
         driver, _ = lib.driver_request( driver, url )
         html = driver.page_source.encode('utf-8')
-        soup = BeautifulSoup( html, "html.parser" )     
+        soup = BeautifulSoup( html, "html.parser" )
         result[horse_name] = html_analyze( soup )
         
         if count % 100 == 0:

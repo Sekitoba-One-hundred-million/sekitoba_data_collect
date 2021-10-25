@@ -4,53 +4,38 @@ from bs4 import BeautifulSoup
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-def parent_data_get( urls ):
-    result = {}
-    result["father"] = {}
-    result["father"]["dist"] = 0
-    result["father"]["race_kind"] = 0
-    result["father"]["rank"] = 0
-    result["father"]["diff"] = 0
-    result["father"]["up_time"] = 0
-    
-    result["mother"] = {}
-    result["mother"]["dist"] = 0
-    result["mother"]["race_kind"] = 0
-    result["mother"]["rank"] = 0
-    result["mother"]["diff"] = 0
-    result["mother"]["up_time"] = 0
-    
-    for k in urls.keys():
-        count = 0
-        dist_class = {}
-        
-        r, _ = lib.request( urls[k] )
-        soup = BeautifulSoup( r.content, "html.parser" )
-        tr_tag = soup.findAll( "tr" )
-    
-        for i in range( 0, len( tr_tag ) ):
-            td_tag = tr_tag[i].findAll( "td" )
-        
-            if 2 < len( td_tag ) and td_tag[3].get( "class" ) != None \
-            and td_tag[3].get( "class" )[0] == "txt_right":
-                try:
-                    dist, race_kind = lib.dist( td_tag[14].text.replace( "\n", "" ) )
-                    result[k]["dist"] += dist
-                    result[k]["race_kind"] += race_kind
-                    result[k]["rank"] += lib.data_check( td_tag[11].text.replace( "\n", "" ) )
-                    result[k]["diff"] += lib.data_check( td_tag[18].text.replace( "\n", "" ) )
-                    result[k]["up_time"] += lib.data_check( td_tag[22].text.replace( "\n", "" ) )
-                    count += 1
-                except:
-                    continue
+def horse_data_collect( url ):
+    horce_data = []
 
-        if not count == 0:
-            for kk in result[k].keys():
-                result[k][kk] /= count
+    r, _ = lib.request( url )
+    soup = BeautifulSoup( r.content, "html.parser" )
+    tr_tag = soup.findAll( "tr" )
 
-    return result
+    for i in range( 0, len( tr_tag ) ):
+        td_tag = tr_tag[i].findAll( "td" )
+        
+        if 2 < len( td_tag ) and td_tag[3].get( "class" ) != None \
+           and td_tag[3].get( "class" )[0] == "txt_right":
+            data_list = []
+            for r in range( 0, len( td_tag ) ):
+                #print( td_tag[r], r )
+                if r != 5 and r != 16 and r != 19 and ( r == 27 or r < 24 ):
+                    data = td_tag[r].text.replace( "\n", "" )
+
+                    if not r == 27:
+                        data_list.append( data )
+                    else:
+                        try:
+                            data_list.append( float( data ) )
+                        except:
+                            data_list.append( 0 )
+
+            if len( data_list ) == 22:
+                horce_data.append( data_list )
+                
+    return horce_data
     
-def parent_url_get( url ):
+def parent_id_get( url ):
     result = {}
     result["father"] = ""
     result["mother"] = ""
@@ -65,40 +50,68 @@ def parent_url_get( url ):
         if not rowspan == None \
           and rowspan == "2":
             a = td.find( "a" )
-            p_url = "https://db.netkeiba.com/horse/" + a.get( "href" ).split( "/" )[3]
+            p_id = a.get( "href" ).split( "/" )[3]
             
             if len( result["father"] ) == 0:
-                result["father"] = p_url
+                result["father"] = p_id
             else:
-                result["mother"] = p_url
+                result["mother"] = p_id
 
     return result
 
 def main():
-    parent_url_data = dm.pickle_load( "parent_url_data.pickle" )
+    parent_id_data = dm.pickle_load( "parent_id_data.pickle" )
     url_list = []
     key_list = []
 
-    if parent_url_data == None:
+    if parent_id_data == None:
         horce_url = dm.pickle_load( "horce_url.pickle" )
+        
         for k in horce_url.keys():
             horce_name = k.replace( " ", "" )
             url_list.append( horce_url[k] )
             key_list.append( horce_name )
 
-
-        parent_url_data = lib.thread_scraping( url_list, key_list ).data_get( parent_url_get )
-        dm.pickle_upload( "parent_url_data.pickle", parent_url_data )
+        parent_id_data = lib.thread_scraping( url_list, key_list ).data_get( parent_id_get )
+        dm.pickle_upload( "parent_id_data.pickle", parent_id_data )
 
     url_list.clear()
     key_list.clear()
-    
-    for k in parent_url_data.keys():
-        url_list.append( parent_url_data[k] )
-        key_list.append( k )
 
-    parent_data = lib.thread_scraping( url_list, key_list ).data_get( parent_data_get )
+    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
+    
+    for k in parent_id_data.keys():
+        f_id = parent_id_data[k]["father"]
+        m_id = parent_id_data[k]["mother"]
+
+        try:
+            horce_data_storage[f_id]
+        except:
+            try:
+                int( f_id )
+                url_list.append( "https://db.netkeiba.com/horse/" + f_id )
+                key_list.append( f_id )
+            except:
+                f_id = 0
+                
+        try:
+            horce_data_storage[m_id]
+        except:
+            try:
+                int( m_id )
+                url_list.append( "https://db.netkeiba.com/horse/" + m_id )
+                key_list.append( m_id )
+            except:
+                m_id = 0
+                
+    parent_data = lib.thread_scraping( url_list, key_list ).data_get( horse_data_collect )
+    dm.pickle_upload( "horce_data_storage.pickle.back", horce_data_storage )
+    
+    for k in parent_data.keys():
+        horce_data_storage[k] = parent_data[k]
+    
     dm.pickle_upload( "parent_data.pickle", parent_data )
+    dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )
     
     
 main()

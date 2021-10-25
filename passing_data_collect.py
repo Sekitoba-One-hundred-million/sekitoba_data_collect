@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-def passing_get( soup ):    
+def passing_get( url ):
+    print( url )
     r, _ = lib.request( url )
     soup = BeautifulSoup( r.content, "html.parser" )
     
@@ -13,8 +14,8 @@ def passing_get( soup ):
 
     for i in range( 0, len( tr_tag ) ):
         td_tag = tr_tag[i].findAll( "td" )
-        
-        if 2 < len( td_tag ) and td_tag[3].get( "class" ) != None \
+
+        if 20 < len( td_tag ) and td_tag[3].get( "class" ) != None \
            and td_tag[3].get( "class" )[0] == "txt_right":
             day = td_tag[0].text.replace( " ", "" )
             passing_data = td_tag[20].text.replace( " ", "" )
@@ -31,22 +32,25 @@ def main():
     if result == None:
         result = {}
         
-    horce_url = dm.pickle_load( "horce_url.pickle" )
+    horce_id_dict = dm.pickle_load( "horce_id_dict.pickle" )
     url_data = []
     key_data = []
 
-    for k in tqdm( horce_url.keys() ):
-        horce_name = k.replace( " ", "" )
-
+    for k in tqdm( horce_id_dict.keys() ):
+        horce_id = k
 
         try:
-            a = result[horce_name]
+            result[horce_id]
         except:
-            url = horce_url[k]            
+            url = "https://db.netkeiba.com/horse/" + horce_id
             url_data.append( url )
-            key_data.append( horce_name )
+            key_data.append( horce_id )
 
     add_data = lib.thread_scraping( url_data, key_data ).data_get( passing_get )
+
+    for k in add_data.keys():
+        result[k] = add_data[k]
+        
     dm.pickle_upload( "passing_data.pickle", result )
 
 main()
