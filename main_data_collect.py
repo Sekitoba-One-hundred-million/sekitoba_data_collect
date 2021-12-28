@@ -85,7 +85,7 @@ def race_data_collect():
                             race_data_storage[url]
                         except:                        
                             race_data = race_data_search( url, horce_url )
-                            print( url )
+                            
                             if len( race_data ) != 0:
                                 race_data_storage[url] = race_data
                             else:
