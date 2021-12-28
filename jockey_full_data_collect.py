@@ -113,5 +113,5 @@ def key_organaize( data = None ):
     dm.pickle_upload( "jockey_full_data.pickle.backup", data )
     dm.pickle_upload( "jockey_full_data.pickle", result )
 
-#main()
+main()
 key_organaize()

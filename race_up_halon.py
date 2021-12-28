@@ -50,7 +50,7 @@ def first_time_get( soup ):
     return result
 
 def main():
-    result = {}#dm.pickle_load( "first_yp3_halon.pickle" )
+    result = dm.pickle_load( "first_up3_halon.pickle" )
     base_url = "https://race.netkeiba.com/race/newspaper.html?race_id="
     race_data = dm.pickle_load( "race_data.pickle" )
     

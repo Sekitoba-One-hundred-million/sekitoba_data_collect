@@ -6,9 +6,12 @@ from tqdm import tqdm
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-def first_time_get( soup ):
+def data_collect( data ):
     result = []
     count = 0
+    
+    r, _ = lib.request( data["url"], cookie = data["cookie"] )
+    soup = BeautifulSoup( r.content, "html.parser" )    
     dl_tag = soup.findAll( "dl" )
 
     for dl in dl_tag:
@@ -63,29 +66,25 @@ def main():
         result = {}
     
     race_data = dm.pickle_upload( "race_data.pickle" )
-
-    driver = webdriver.Chrome()
-    driver = lib.login( driver )
-    count = 0
+    cookie = lib.netkeiba_login()
+    key_list = []
+    url_list = []
 
     for k in tqdm( race_data.keys() ):
         race_id = lib.id_get( k )
 
         try:
-            a = result[race_id]
+            result[race_id]
         except:
             url = "https://race.netkeiba.com/race/newspaper.html?race_id=" + race_id
-            driver, _ = lib.driver_request( driver, url )
-            time.sleep( 2 )
-            html = driver.page_source.encode('utf-8')
-            soup = BeautifulSoup( html, "html.parser" )
-            result[race_id] = first_time_get( soup )
-            count += 1
+            key_list.append( race_id )
+            url_list.append( { "url": url, "cookie": cookie } )
 
-        if count % 100 == 0:
-            dm.pickle_upload( "first_time.pickle", result )
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+
+    for k in add_data.keys():
+        result[k] = add_data[k]    
     
     dm.pickle_upload( "first_time.pickle", result )
-    driver.close()
     
 main()

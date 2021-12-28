@@ -61,26 +61,30 @@ def parent_id_get( url ):
 
 def main():
     parent_id_data = dm.pickle_load( "parent_id_data.pickle" )
+    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
+    
     url_list = []
     key_list = []
 
-    if parent_id_data == None:
-        horce_url = dm.pickle_load( "horce_url.pickle" )
-        
-        for k in horce_url.keys():
-            horce_name = k.replace( " ", "" )
+    for k in horce_data_storage.keys():
+        horce_id = k
+        try:
+            parent_id_data[horce_id]
+        except:            
             url_list.append( horce_url[k] )
-            key_list.append( horce_name )
+            key_list.append( horce_id )
+        
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( parent_id_get )
 
-        parent_id_data = lib.thread_scraping( url_list, key_list ).data_get( parent_id_get )
-        dm.pickle_upload( "parent_id_data.pickle", parent_id_data )
+    for k in add_data.keys():
+        parent_id_data[k] = add_data[k]
+    
+    dm.pickle_upload( "parent_id_data.pickle", parent_id_data )
 
     url_list.clear()
     key_list.clear()
-
-    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
     
-    for k in parent_id_data.keys():
+    for k in add_data.keys():
         f_id = parent_id_data[k]["father"]
         m_id = parent_id_data[k]["mother"]
 
@@ -105,7 +109,6 @@ def main():
                 m_id = 0
                 
     parent_data = lib.thread_scraping( url_list, key_list ).data_get( horse_data_collect )
-    dm.pickle_upload( "horce_data_storage.pickle.back", horce_data_storage )
     
     for k in parent_data.keys():
         horce_data_storage[k] = parent_data[k]

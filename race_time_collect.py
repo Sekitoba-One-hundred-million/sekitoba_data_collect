@@ -74,6 +74,5 @@ def main():
         result[k] = add_data[k]
     
     dm.pickle_upload( "race_time_data.pickle", result )
-       
-    
+           
 main()
