@@ -77,7 +77,7 @@ def race_data_collect():
         for p in range( 1, 11 ):
             for m in range( 1, 11 ):
                 for d in range( 1, 13 ):
-                    for r in range( 1, 13 ):                        
+                    for r in range( 1, 13 ):        
                         race_id = str( y ) + num_check( str( p ) ) + num_check( str( m ) ) + num_check( str( d ) ) + num_check( str( r ) )
                         url = base_url + race_id
                         
@@ -85,7 +85,7 @@ def race_data_collect():
                             race_data_storage[url]
                         except:                        
                             race_data = race_data_search( url, horce_url )
-
+                            print( url )
                             if len( race_data ) != 0:
                                 race_data_storage[url] = race_data
                             else:

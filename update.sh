@@ -19,7 +19,6 @@ rm -rf $log_name
 for f in "${array[@]}"; do
     python $f
     echo "finish " $f >> $log_name
-    exit 0
 done
 exit 0
 
