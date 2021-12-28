@@ -33,19 +33,17 @@ def closs_get( url ):
 
 def main():
     result = dm.pickle_load( "blood_closs_data.pickle" )
+    result = {}
     
-    if result == None:
-        result = {}
-        
-    horce_url = dm.pickle_load( "horce_url.pickle" )
+    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
     key_list = []
     url_list = []
     
-    for k in horce_url.keys():
+    for k in horce_data_storage.keys():
         try:
             a = result[k]
         except:
-            horce_id = horce_url[k].split( "/" )[4]
+            horce_id = k
             url = "https://db.netkeiba.com/horse/ped/" + horce_id
             url_list.append( url )
             key_list.append( k )
