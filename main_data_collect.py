@@ -61,7 +61,7 @@ def race_data_search( url, horce_url ):
                 current_race_data[horce_id] = None
                 horce_url[horce_id] = h_url
 
-    return current_race_data, horce_url
+    return current_race_data
 
 def race_data_collect():
     race_data_storage = dm.pickle_load( "race_data.pickle" )
@@ -81,15 +81,12 @@ def race_data_collect():
                         race_id = str( y ) + num_check( str( p ) ) + num_check( str( m ) ) + num_check( str( d ) ) + num_check( str( r ) )
                         url = base_url + race_id
                         
-                        try:
-                            race_data_storage[url]
-                        except:                        
-                            race_data = race_data_search( url, horce_url )
-                            
-                            if len( race_data ) != 0:
-                                race_data_storage[url] = race_data
-                            else:
-                                continue
+                        race_data = race_data_search( url, horce_url )
+                    
+                        if len( race_data ) != 0:
+                            race_data_storage[url] = race_data
+                        else:
+                            continue
                         
     return race_data_storage, horce_url
 
