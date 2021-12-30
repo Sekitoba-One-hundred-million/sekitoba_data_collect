@@ -1,4 +1,4 @@
-declare -a array=( "main_data_collect.py"
+declare -a array=( #"main_data_collect.py"
                    "baba_index_get.py"
                    "blood_data_get.py"
                    "corner_rank_collect.py"

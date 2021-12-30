@@ -32,19 +32,20 @@ def main():
     if result == None:
         result = {}    
     
-    race_data = dm.pickle_load( "race_data.pickle" )    
+    race_data = dm.pickle_load( "race_data.pickle" )
     url_list = []
     key_list = []
 
     for k in race_data.keys():        
         race_id = lib.id_get( k )
+        year = race_id[0:4]
 
-        try:
-            result[race_id]
-        except:
-            url = "https://race.netkeiba.com/race/result.html?race_id=" + race_id
-            key_list.append( race_id )
-            url_list.append( url )
+        if not year == lib.test_year:
+            continue
+        
+        url = "https://race.netkeiba.com/race/result.html?race_id=" + race_id
+        key_list.append( race_id )
+        url_list.append( url )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
 
