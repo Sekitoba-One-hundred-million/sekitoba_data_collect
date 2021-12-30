@@ -75,6 +75,7 @@ def race_data_collect():
     for y in range( 2021, 2022 ):
         print( y )
         for p in range( 1, 11 ):
+            print( p )
             for m in range( 1, 11 ):
                 for d in range( 1, 13 ):
                     for r in range( 1, 13 ):        
@@ -82,19 +83,19 @@ def race_data_collect():
                         url = base_url + race_id
                         
                         race_data = race_data_search( url, horce_url )
-                    
+                        
                         if len( race_data ) != 0:
                             race_data_storage[url] = race_data
                         else:
-                            continue
+                            break
                         
     return race_data_storage, horce_url
 
 def main():    
-    race_data, horse_url = race_data_collect()    
+    race_data, horce_url = race_data_collect()    
     dm.pickle_upload( "race_data.pickle", race_data )
     
-    horse_data_storage = {}
+    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
     jockey_name_check = {}
     parent_name_data = {}
     parent_url = {}
@@ -102,8 +103,8 @@ def main():
 
     for k in tqdm( horce_url.keys() ):
         url = horce_url[k]
-        horse_data_storage[k] = horse_data_collect( url )
+        horce_data_storage[k] = horse_data_collect( url )
     
-    dm.pickle_upload( "horce_data_storage.pickle", horse_data_storage )
+    dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )
     
 main()
