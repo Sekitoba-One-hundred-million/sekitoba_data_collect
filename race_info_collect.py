@@ -47,12 +47,13 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
+        year = race_id[0:4]
 
-        try:
-            result[race_id]
-        except:
-            url_list.append( k )
-            key_list.append( race_id )
+        if not year == lib.test_year:
+            continue
+        
+        url_list.append( k )
+        key_list.append( race_id )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_get )
     rd = dm.pickle_load( "race_course_data.pickle" )
@@ -64,7 +65,10 @@ def main():
         try:
             result[k]["out_side"] = rd[k]["out_side"]
         except:
-            result[k]["out_side"] = rd[k]["外"]
+            try:
+                result[k]["out_side"] = rd[k]["外"]
+            except:
+                continue
             
         result[k]["direction"] = rd[k]["direction"]
         

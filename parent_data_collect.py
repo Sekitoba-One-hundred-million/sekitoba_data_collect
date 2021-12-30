@@ -71,7 +71,7 @@ def main():
         try:
             parent_id_data[horce_id]
         except:            
-            url_list.append( horce_url[k] )
+            url_list.append( "https://db.netkeiba.com/horse/" + horce_id )
             key_list.append( horce_id )
         
     add_data = lib.thread_scraping( url_list, key_list ).data_get( parent_id_get )
