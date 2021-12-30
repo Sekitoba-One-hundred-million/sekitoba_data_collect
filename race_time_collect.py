@@ -59,14 +59,14 @@ def main():
 
     for k in tqdm( race_data.keys() ):
         race_id = lib.id_get( k )
+        year = race_id[0:4]
+
+        if not year == lib.test_year:
+            continue
+        
         url = "https://race.netkeiba.com/race/result.html?race_id=" + race_id
-
-        try:
-            a = result[race_id]
-        except:
-            url_data.append( url )
-            key_data.append( race_id )
-
+        url_data.append( url )
+        key_data.append( race_id )
 
     add_data = lib.thread_scraping( url_data, key_data ).data_get( data_get )
 

@@ -80,8 +80,7 @@ def race_data_collect():
                 for d in range( 1, 13 ):
                     for r in range( 1, 13 ):        
                         race_id = str( y ) + num_check( str( p ) ) + num_check( str( m ) ) + num_check( str( d ) ) + num_check( str( r ) )
-                        url = base_url + race_id
-                        
+                        url = base_url + race_id                        
                         race_data = race_data_search( url, horce_url )
                         
                         if len( race_data ) != 0:
@@ -92,9 +91,13 @@ def race_data_collect():
     return race_data_storage, horce_url
 
 def main():    
-    race_data, horce_url = race_data_collect()    
+    race_data, horce_url = race_data_collect()
     dm.pickle_upload( "race_data.pickle", race_data )
-    
+
+    file_name = "horce_url" + "-" + lib.test_year + ".pickle"
+    print( file_name )
+    dm.pickle_upload( file_name, horce_url )
+    return 
     horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
     jockey_name_check = {}
     parent_name_data = {}

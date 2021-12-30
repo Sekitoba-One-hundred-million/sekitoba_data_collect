@@ -46,11 +46,22 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
+        year = race_id[0:4]
+
+        if not year == lib.test_year:
+            continue
+                
         url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
         key_list.append( race_id )
         url_list.append( { "url": url, "cookie": cookie } )
 
-    result = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+
+    result = dm.pickle_load( "train_time_data.pickle" )
+
+    for k in add_data.keys():
+        result[k] = add_data[k]
+        
     dm.pickle_upload( "train_time_data.pickle", result )
 
 if __name__ == "__main__":
