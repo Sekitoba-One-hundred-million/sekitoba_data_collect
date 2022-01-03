@@ -28,7 +28,7 @@ def data_collect( data ):
 def main():
     result = {}
     cookie = lib.netkeiba_login()
-    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+    horce_data = dm.pickle_load( "horce_url-" + lib.test_year + ".pickle" )
     key_list = []
     url_list = []
 
@@ -37,7 +37,16 @@ def main():
         url = "https://db.netkeiba.com/horse/" + k
         url_list.append( { "url": url, "cookie": cookie } )
 
-    result = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+
+    result = dm.pickle_load( "baba_index_data.pickle" )
+
+    if result == None:
+        result = {}
+
+    for k in add_data.keys():
+        result[k] = add_data[k]    
+    
     dm.pickle_upload( "baba_index_data.pickle", result )
 
 if __name__ == "__main__":

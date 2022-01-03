@@ -117,7 +117,7 @@ def data_collect( soup ):
                                 instance["max"] = lib.data_check( span.text )
 
                     result[horce_num1][horce_num2] = instance
-                            
+
     return result
 
 def main():
@@ -130,6 +130,10 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
+        year = race_id[0:4]
+
+        if not year == "2021":
+            continue
         
         try:
             a = result[race_id]            
@@ -146,7 +150,7 @@ def main():
             d = hex(i)[2:].upper()
 
             if len( d ) == 1:
-                continue
+                d = "0" + d
         
             cname = base_cname + d
             req = req_create( cname )

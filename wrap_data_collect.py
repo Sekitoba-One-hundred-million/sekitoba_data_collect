@@ -45,12 +45,11 @@ def main():
         key_list.append( race_id )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( wrap_get )
-
     result = dm.pickle_load( "wrap_data.pickle" )
 
     if result == None:
         result = {}
-
+        
     for k in add_data.keys():
         result[k] = add_data[k]
     

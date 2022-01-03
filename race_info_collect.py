@@ -46,12 +46,13 @@ def main():
     key_list = []
 
     for k in race_data.keys():
+        continue
         race_id = lib.id_get( k )
         year = race_id[0:4]
 
         if not year == lib.test_year:
             continue
-        
+
         url_list.append( k )
         key_list.append( race_id )
 
@@ -71,7 +72,8 @@ def main():
                 continue
             
         result[k]["direction"] = rd[k]["direction"]
-        
+
+    
     dm.pickle_upload( "race_info_data.pickle", result )
 
 main()
