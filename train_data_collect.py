@@ -10,17 +10,26 @@ def data_collect( data ):
     r, _ = lib.request( data["url"], cookie = data["cookie"] )
     soup = BeautifulSoup( r.content, "html.parser" )
     ul_tag = soup.findAll( "ul" )
+    tr_tag = soup.findAll( "tr" )    
 
-    for ul in ul_tag:
-        class_name = ul.get( "class" )
+    for tr in tr_tag:
+        class_name = tr.get( "class" )
 
         if not class_name == None \
-          and class_name[0] == "TrainingTimeDataList":            
-            li_tag = ul.findAll( "li" )
-            key = str( int( count ) )           
-            lib.dic_append( result, key, { "time": [], "wrap": [] } )
-            count += 1
+          and "OikiriDataHead" in class_name[0]:
+            td_tag = tr.findAll( "td" )
             
+            if not len( td_tag ) == 13:
+                continue
+
+            key = td_tag[1].text
+            lib.dic_append( result, key, { "time": [], "wrap": [], "load": "", "critic": "", "rank": "", "cource": ""  } )
+            li_tag = td_tag[8].findAll( "li" )
+            result[key]["cource"] = td_tag[5].text            
+            result[key]["load"] = td_tag[10].text
+            result[key]["critic"] = td_tag[11].text
+            result[key]["rank"] = td_tag[12].text
+
             for li in li_tag:
                 text_list = li.text.replace( ")", "" ).split( "(" )
 
@@ -47,10 +56,6 @@ def main():
     for k in race_data.keys():
         race_id = lib.id_get( k )
         year = race_id[0:4]
-
-        if not year == lib.test_year:
-            continue
-                
         url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
         key_list.append( race_id )
         url_list.append( { "url": url, "cookie": cookie } )

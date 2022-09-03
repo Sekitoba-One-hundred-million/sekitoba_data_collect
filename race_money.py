@@ -54,8 +54,11 @@ def main():
             url_data.append( url )
             key_data.append( race_id )
 
-
     add_data = lib.thread_scraping( url_data, key_data ).data_get( race_money_get )
+
+    for k in add_data.keys():
+        result[k] = add_data[k]
+    
     dm.pickle_upload( "race_money_data.pickle", result )
 
 main()

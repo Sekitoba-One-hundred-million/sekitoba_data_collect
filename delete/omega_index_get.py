@@ -96,7 +96,7 @@ def main():
     if result == None:
         result = {}
 
-    for y in range( 2020, 2021 ):#年
+    for y in range( 2021, 2022 ):#年
         for m in range( 1, 13 ):#月
             print( y, m )
             for d in range( 1, 32 ):#日

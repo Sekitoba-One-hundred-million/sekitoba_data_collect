@@ -13,15 +13,15 @@ def data_collect( url ):
     for tr in tr_tag:
         class_name = tr.get( "class" )
         
-        if not class_name == None and "HorseList" in class_name:
+        if not class_name == None and class_name[0] == "HorseList":
             horce_id = ""
-            jockey_id = ""
+            trainer_id = ""
             td_tag = tr.findAll( "td" )
             for td in td_tag:
                 td_class_name = td.get( "class" )
                 
                 if not td_class_name == None:
-                    if td_class_name[0] == "HorseInfo":
+                    if td_class_name[0] == "Horse_Info":
                         a = td.find( "a" )
                         try:
                             href = a.get( "href" )
@@ -29,23 +29,23 @@ def data_collect( url ):
                         except:
                             continue
                         
-                    elif td_class_name[0] == "Jockey":
+                    elif td_class_name[0] == "Trainer":
                         a = td.find( "a" )
                         try:
                             href = a.get( "href" )
-                            jockey_id = href.split( "/" )[-2]
+                            trainer_id = href.split( "/" )[-2]
                         except:
                             continue
 
-            if not len( horce_id ) == 0 and not len( jockey_id ) == 0:
-                result[horce_id] = jockey_id
+            if not len( horce_id ) == 0 and not len( trainer_id ) == 0:
+                result[horce_id] = trainer_id
 
-    return result            
+    return result
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
-    race_jockey_id_data = {}
-    jockey_id_data = {}
+    race_trainer_id_data = {}
+    trainer_id_data = {}
     key_list = []
     url_list = []
 
@@ -58,14 +58,14 @@ def main():
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
 
     for k in add_data.keys():
-        race_jockey_id_data[k] = copy.deepcopy( add_data[k] )
+        race_trainer_id_data[k] = copy.deepcopy( add_data[k] )
 
         for kk in add_data[k].keys():
-            jockey_id = copy.copy( add_data[k][kk] )
-            jockey_id_data[jockey_id] = True
+            trainer_id = copy.copy( add_data[k][kk] )
+            trainer_id_data[trainer_id] = True
 
-    dm.pickle_upload( "race_jockey_id_data.pickle", race_jockey_id_data )
-    dm.pickle_upload( "jockey_id_data.pickle", jockey_id_data )
+    dm.pickle_upload( "race_trainer_id_data.pickle", race_trainer_id_data )
+    dm.pickle_upload( "trainer_id_data.pickle", trainer_id_data )
 
 if __name__ == "__main__":
     main()

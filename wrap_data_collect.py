@@ -29,26 +29,25 @@ def wrap_get( url ):
 def main():    
     base_url =  "https://race.netkeiba.com/race/result.html?race_id="
     race_data = dm.pickle_load( "race_data.pickle" )
+    result = dm.pickle_load( "wrap_data.pickle" )
+
+    if result == None:
+        result = {}
 
     url_list = []
     key_list = []
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
-        year = race_id[0:4]
 
-        if not year == lib.test_year:
-            continue
-        
-        url = base_url + race_id
-        url_list.append( url )
-        key_list.append( race_id )
+        try:
+            result[race_id]
+        except:
+            url = base_url + race_id
+            url_list.append( url )
+            key_list.append( race_id )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( wrap_get )
-    result = dm.pickle_load( "wrap_data.pickle" )
-
-    if result == None:
-        result = {}
         
     for k in add_data.keys():
         result[k] = add_data[k]

@@ -8,6 +8,7 @@ def data_collect( data ):
     result = {}
     r, _ = lib.request( data["url"], cookie = data["cookie"] )
     soup = BeautifulSoup( r.content, "html.parser" )
+
     tr_tag = soup.findAll( "tr" )
 
     for i in range( 0, len( tr_tag ) ):
@@ -15,19 +16,25 @@ def data_collect( data ):
         
         if 2 < len( td_tag ) and td_tag[3].get( "class" ) != None \
            and td_tag[3].get( "class" )[0] == "txt_right":
-            time_index = td_tag[19].text.replace( "\n", "" ).replace( " ", "" )
-            day_key = td_tag[0].text.replace( "\n", "" ).replace( " ", "" )
-
             try:
-                result[day_key] = float( time_index )
+                day_key = td_tag[0].text.replace( "\n", "" ).replace( " ", "" )
+                slow_start_str = td_tag[25].text.replace( "\n", "" ).replace( " ", "" )
             except:
-                result[day_key] = 0
+                continue
+
+            slow_start = False
+            
+            if slow_start_str == "出遅れ":
+                slow_start = True
+
+            result[day_key] = slow_start
 
     return result
 
-def main():    
+def main():
+    file_name = "slow_start_data.pickle"
     cookie = lib.netkeiba_login()
-    horce_data = dm.pickle_load( "horce_url-" + lib.test_year + ".pickle" )
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     key_list = []
     url_list = []
 
@@ -37,16 +44,16 @@ def main():
         url_list.append( { "url": url, "cookie": cookie } )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
-    result = dm.pickle_load( "time_index_data.pickle" )
+    result = dm.pickle_load( file_name )
 
     if result == None:
         result = {}
 
     for k in add_data.keys():
         result[k] = add_data[k]
-        
-    dm.pickle_upload( "time_index_data.pickle", result )
+
+    dm.pickle_upload( file_name, result )
+    
 
 if __name__ == "__main__":
     main()
-    
