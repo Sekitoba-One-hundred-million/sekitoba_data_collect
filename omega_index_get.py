@@ -1,4 +1,5 @@
 import time
+import datetime
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -6,14 +7,10 @@ from selenium import webdriver
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-
-def data_get( driver, url, year, race_num, place ):
+def data_get( driver, url ):
     driver, _ = lib.driver_request( driver, url )
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )        
-
-    #soup = BeautifulSoup( r.content, "html.parser" )
-    race_id = year
 
     td_tag = soup.findAll( "td" )
     instance = []
@@ -66,75 +63,53 @@ def data_get( driver, url, year, race_num, place ):
                     if finish:
                         break
 
-    if len( str( place ) ) == 1:
-        race_id += "0"
-        
-    race_id += str( place )
+    return instance
 
-    if len( str( r_count ) ) == 1:
-        race_id += "0"
-        
-    race_id += str( r_count )
+def url_connect( url, str_data ):
+    if len( str_data ) == 1:
+        url += "0"
 
-    if len( str( r_day ) ) == 1:
-        race_id += "0"
-        
-    race_id += str( r_day )
+    url += str_data
+    return url
 
-    if len( str( race_num ) ) == 1:
-        race_id += "0"
-        
-    race_id += str( race_num )
-    
-    return race_id, instance
-    
 def main():
     base_url = "https://www.keibalab.jp/db/race/"
     driver = webdriver.Chrome()
     result = dm.pickle_load( "omega_index_data.pickle" )
+    race_day_data = dm.pickle_load( "race_day.pickle" )
+    race_data = dm.pickle_load( "race_data.pickle" )
+    race_info_data = dm.pickle_load( "race_info_data.pickle" )
 
-    if result == None:
-        result = {}
+    test_year = int( lib.test_years[-1] )
+    month = 13
 
-    for y in range( 2021, 2022 ):#年
-        for m in range( 1, 13 ):#月
-            print( y, m )
-            for d in range( 1, 32 ):#日
-                for p in range( 1, 11 ):
-                    for r in range( 1, 13 ):#レースR
-                        url = base_url + str( y )
+    for k in tqdm( race_data.keys() ):
+        race_id = lib.id_get( k )
 
-                        if len( str( m ) ) == 1:
-                            url += "0"
+        if race_id in result:
+            continue
+        
+        year = int( race_day_data[race_id]["year"] )
+        month = int( race_day_data[race_id]["month"] )
+        day = int( race_day_data[race_id]["day"] )
+        race_num = race_id[10:12]
+        place_num = str( race_info_data[race_id]["place"] )
+        url = base_url + str( year )
+        url = url_connect( url, str( month ) )
+        url = url_connect( url, str( day ) )
+        url = url_connect( url, place_num )
+        url += race_num
+        url += "/syutsuba.html"
 
-                        url += str( m )
+        data = data_get( driver, url )
+        time.sleep( 1 )
+    
+        if len( data ) == 0:
+            continue
 
-                        if len( str( d ) ) == 1:
-                            url += "0"
-
-                        url += str( d )
-
-                        if len( str( p ) ) == 1:
-                            url += "0"
-
-                        url += str( p )
-                        
-                        if len( str( r ) ) == 1:
-                            url += "0"
-
-                        url += str( r )
-
-                        url += "/syutsuba.html"
-
-                        #url = "https://www.keibalab.jp/db/race/202011220904/syutsuba.html"
-                        race_id, data = data_get( driver, url, str( y ), str( r ), str( p ) )
-                        time.sleep( 1 )
-                        if len( data ) == 0:
-                            break
-
-                        result[race_id] = data
+        result[race_id] = data
 
     dm.pickle_upload( "omega_index_data.pickle", result )
-                        
+
 main()
     

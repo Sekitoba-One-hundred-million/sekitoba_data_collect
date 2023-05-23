@@ -44,14 +44,11 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
-        year = race_id[0:4]
 
-        if not year == lib.test_year:
-            continue
-        
-        url = base_url + race_id
-        url_data.append( url )
-        key_data.append( race_id )
+        if not race_id in result:        
+            url = base_url + race_id
+            url_data.append( url )
+            key_data.append( race_id )
             
     add_data = lib.thread_scraping( url_data, key_data ).data_get( race_course_data_get )
 

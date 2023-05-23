@@ -48,6 +48,11 @@ def data_collect( data ):
     return result
 
 def main():
+    result = dm.pickle_load( "train_time_data.pickle" )
+
+    if result == None:
+        result = {}
+    
     race_data = dm.pickle_load( "race_data.pickle" )
     cookie = lib.netkeiba_login()
     key_list = []
@@ -55,14 +60,13 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
-        year = race_id[0:4]
-        url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
-        key_list.append( race_id )
-        url_list.append( { "url": url, "cookie": cookie } )
+
+        if not race_id in result:
+            url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
+            key_list.append( race_id )
+            url_list.append( { "url": url, "cookie": cookie } )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
-
-    result = dm.pickle_load( "train_time_data.pickle" )
 
     for k in add_data.keys():
         result[k] = add_data[k]

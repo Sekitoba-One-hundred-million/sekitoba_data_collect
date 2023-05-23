@@ -45,10 +45,8 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
-        
-        try:
-            a = result[race_id]
-        except:
+
+        if not race_id in result:
             key_list.append( race_id )
             url_list.append( race_id )
 

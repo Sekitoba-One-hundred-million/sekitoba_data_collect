@@ -71,8 +71,9 @@ def race_data_collect():
         race_data_storage = {}
 
     base_url = "https://race.netkeiba.com/race/shutuba.html?race_id="
+    test_year = int( lib.test_years[-1] )
 
-    for y in range( 2021, 2022 ):
+    for y in range( 2009, 2023 ):
         print( y )
         for p in range( 1, 11 ):
             print( p )
@@ -93,11 +94,6 @@ def race_data_collect():
 def main():    
     race_data, horce_url = race_data_collect()
     dm.pickle_upload( "race_data.pickle", race_data )
-
-    file_name = "horce_url" + "-" + lib.test_year + ".pickle"
-    print( file_name )
-    dm.pickle_upload( file_name, horce_url )
-    return 
     horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
     jockey_name_check = {}
     parent_name_data = {}

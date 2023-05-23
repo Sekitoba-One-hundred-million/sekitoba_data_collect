@@ -68,9 +68,8 @@ def main():
 
     for k in horce_data_storage.keys():
         horce_id = k
-        try:
-            parent_id_data[horce_id]
-        except:            
+
+        if not horce_id in parent_id_data:
             url_list.append( "https://db.netkeiba.com/horse/" + horce_id )
             key_list.append( horce_id )
         
@@ -88,19 +87,15 @@ def main():
         f_id = parent_id_data[k]["father"]
         m_id = parent_id_data[k]["mother"]
 
-        try:
-            horce_data_storage[f_id]
-        except:
+        if not m_id in horce_data_storage:
             try:
                 int( f_id )
                 url_list.append( "https://db.netkeiba.com/horse/" + f_id )
                 key_list.append( f_id )
             except:
                 f_id = 0
-                
-        try:
-            horce_data_storage[m_id]
-        except:
+
+        if m_id in horce_data_storage:
             try:
                 int( m_id )
                 url_list.append( "https://db.netkeiba.com/horse/" + m_id )
@@ -114,7 +109,6 @@ def main():
         horce_data_storage[k] = parent_data[k]
     
     dm.pickle_upload( "parent_data.pickle", parent_data )
-    dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )
-    
+    dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )    
     
 main()

@@ -42,9 +42,7 @@ def main():
     key_list = []
 
     for horce_id in horce_data.keys():
-        try:
-            result[horce_id]
-        except:
+        if not horce_id in result:
             url = base_url + horce_id
             key_list.append( horce_id )
             url_list.append( url )

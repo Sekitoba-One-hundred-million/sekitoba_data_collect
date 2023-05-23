@@ -61,7 +61,7 @@ def main():
         race_id = lib.id_get( k )
         year = race_id[0:4]
 
-        if not year == lib.test_year:
+        if not year == lib.test_years[-1]:
             continue
         
         url = "https://race.netkeiba.com/race/result.html?race_id=" + race_id

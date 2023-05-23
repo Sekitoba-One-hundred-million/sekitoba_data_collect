@@ -27,7 +27,7 @@ def data_collect( data ):
 
 def main():    
     cookie = lib.netkeiba_login()
-    horce_data = dm.pickle_load( "horce_url-" + lib.test_year + ".pickle" )
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     key_list = []
     url_list = []
 

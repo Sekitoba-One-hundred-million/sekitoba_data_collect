@@ -44,16 +44,18 @@ def data_collect( url ):
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
-    race_jockey_id_data = {}
-    jockey_id_data = {}
+    race_jockey_id_data = dm.pickle_load( "race_jockey_id_data.pickle" )
+    jockey_id_data = dm.pickle_load( "jockey_id_data.pickle" )
     key_list = []
     url_list = []
 
     for k in race_data.keys():
         url = k
         race_id = lib.id_get( k )
-        key_list.append( race_id )
-        url_list.append( url )
+
+        if not race_id in race_jockey_id_data:
+            key_list.append( race_id )
+            url_list.append( url )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
 

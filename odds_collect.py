@@ -57,12 +57,11 @@ def main():
     
     for k in tqdm( race_data.keys() ):
         url = base_url + lib.id_get( k ) + "&rf=race_list"
+        race_id = lib.id_get(k)
 
-        try:
-            a = result[lib.id_get(k)]
-        except:
+        if not race_id in result:
             url_data.append( url )
-            key_data.append( lib.id_get( k ) )
+            key_data.append( race_id )
 
     add_data = lib.thread_scraping( url_data, key_data ).data_get( money_get )
 

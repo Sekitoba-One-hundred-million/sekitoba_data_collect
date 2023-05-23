@@ -21,7 +21,7 @@ def data_collect( url ):
                 td_class_name = td.get( "class" )
                 
                 if not td_class_name == None:
-                    if td_class_name[0] == "Horse_Info":
+                    if td_class_name[0] == "HorseInfo":
                         a = td.find( "a" )
                         try:
                             href = a.get( "href" )
@@ -44,14 +44,16 @@ def data_collect( url ):
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
-    race_trainer_id_data = {}
-    trainer_id_data = {}
+    race_trainer_id_data = dm.pickle_load( "race_trainer_id_data.pickle" )
+    trainer_id_data = dm.pickle_load( "trainer_id_data.pickle" )
     key_list = []
     url_list = []
 
     for k in race_data.keys():
         url = k
         race_id = lib.id_get( k )
+
+        #if not race_id in race_trainer_id_data:
         key_list.append( race_id )
         url_list.append( url )
 

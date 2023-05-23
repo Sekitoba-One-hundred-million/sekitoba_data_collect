@@ -1,179 +1,115 @@
+import time
+import datetime
+from tqdm import tqdm
+from bs4 import BeautifulSoup
+from selenium import webdriver
+
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-import requests
-import time
-import json
-from requests.exceptions import Timeout
-import urllib.request, urllib.parse
-import gzip
-from bs4 import BeautifulSoup
+def data_get( driver, url ):
+    driver, _ = lib.driver_request( driver, url )
+    html = driver.page_source.encode('utf-8')
+    soup = BeautifulSoup( html, "html.parser" )        
 
-def post_connect( req ):
-    for i in range( 0, 30 ):
-        try:
-            response = urllib.request.urlopen( req, timeout = 3 )
-
-            return response
-        except:        
-            print( "timeout" )
-            time.sleep( 2 )
-
-    return None
-
-def req_create( cname ):
-    url = "https://www.jra.go.jp/JRADB/accessO.html"
-    values = { "cname": cname }#place_num 2021 5回7日 R 2021 12/25
-    data = urllib.parse.urlencode(values)
-    data = data.encode('ascii') # data should be bytes
-    headers = { "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-                "Cache-Control": "max-age=0",
-                "Connection": "keep-alive",
-                "Content-Length": 41,
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Host": "www.jra.go.jp",
-                "Origin": "https://www.jra.go.jp",
-                "Referer": "https://www.jra.go.jp/JRADB/accessO.html",
-                "sec-ch-ua": '" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"',
-                "sec-ch-ua-mobile": 70,
-                "Sec-Fetch-Dest": "document",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "same-origin",
-                "Sec-Fetch-User": "?1",
-                "Upgrade-Insecure-Requests": 1,
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36" }
+    td_tag = soup.findAll( "td" )
+    instance = []
     
-    req = urllib.request.Request(url, data, headers )
+    for td in td_tag:
+        class_name = td.get( "class" )
 
-    return req
+        if not class_name == None \
+           and len( class_name ) == 2 \
+           and class_name[0] == "tC" \
+           and "cyaku" in class_name[1]:
+            try:
+                instance.append( float( td.text ) )
+            except:
+                instance.append( 0 )
+            
+    if len( instance ) == 0:
+        return "", []
+    
+    p_tag = soup.findAll( "p" )
+    r_day = ""
+    r_count = ""
+                
+    for p in p_tag:
+        itemprop_name = p.get( "itemprop" )
+        class_name = p.get( "class" )
+        
+        if not itemprop_name == None \
+           and not class_name == None \
+           and itemprop_name == "about" \
+           and class_name[0] == "bold":
+            num_data = p.text.split( "\n" )
 
-def web_check( soup ):
-    title = soup.find( "title" ).text.replace( "　", "" )
+            count = 0
 
-    if title == "パラメータエラーJRA":
-        return False
+            for i in range( 0, len( num_data[1] ) ):
+                try:
+                    r_count += str( int( num_data[1][i] ) )
+                except:
+                    count = i
+                    break
 
-    return True
+            finish = False
+            
+            for i in range( count, len( num_data[1] ) ):
+                try:
+                    r_day += str( int( num_data[1][i] ) )
+                    finish = True
+                except:
+                    if finish:
+                        break
 
-def jra_id_get( race_id, ymd ):
-    base_name = "pw151ou10"
-    year = race_id[0:4]
-    race_place_num = race_id[4:6] #place
-    num = race_id[6:8] #回
-    race_day = race_id[8:10] #日
-    race = race_id[10:12] #?R
+    return instance
 
-    if ymd["month"] < 10:
-        month = "0" + str( int( ymd["month"] ) )
-    else:
-        month = str( int( ymd["month"] ) )
+def url_connect( url, str_data ):
+    if len( str_data ) == 1:
+        url += "0"
 
-    if ymd["day"] < 10:
-        day = "0" + str( int( ymd["day"] ) )
-    else:
-        day = str( int( ymd["day"] ) )
-
-    jra_id = base_name + race_place_num + year + num + race_day + race + year + month + day + "Z/"
-    return jra_id
-
-def data_collect( soup ):
-    result = {}
-    div_tag = soup.findAll( "div" )   
-
-    for div in div_tag:
-        id_name = div.get( "id" )
-
-        if not id_name == None \
-          and id_name == "odds_list":
-            tr_tag = soup.findAll( "tr" )
-
-            for tr in tr_tag:
-                td_tag = tr.findAll( "td" )
-                instance = {}
-                key_horce_num = ""
-
-                for td in td_tag:
-                    class_name = td.get( "class" )
-                    
-                    if not class_name == None:
-                        if class_name[0] == "num":
-                            key_horce_num = td.text
-                        elif class_name[0] == "odds_fuku":
-                            span_tag = td.findAll( "span" )
-
-                            for span in span_tag:
-                                span_class_name = span.get( "class" )
-
-                                if not span_class_name == None:
-                                    if span_class_name[0] == "min":
-                                        instance["min"] = lib.data_check( span.text )
-                                    elif span_class_name[0] == "max":
-                                        instance["max"] = lib.data_check( span.text )
-
-                if not len( key_horce_num ) == 0:
-                    result[key_horce_num] = instance
-
-    return result
+    url += str_data
+    return url
 
 def main():
-    result = dm.pickle_load( "fuku_odds_data.pickle")
-    race_day = dm.pickle_load( "race_day.pickle" )
+    base_url = "https://www.keibalab.jp/db/race/"
+    driver = webdriver.Chrome()
+    result = dm.pickle_load( "omega_index_data.pickle" )
+    race_day_data = dm.pickle_load( "race_day.pickle" )
     race_data = dm.pickle_load( "race_data.pickle" )
+    race_info_data = dm.pickle_load( "race_info_data.pickle" )
 
-    if result == None:
-        result = {}
+    test_year = int( lib.test_years[-1] )
+    month = 13
 
-    for k in race_data.keys():
+    for k in tqdm( race_data.keys() ):
         race_id = lib.id_get( k )
-        year = race_id[0:4]
 
-        if not year == "2021":
+        if race_id in result:
             continue
         
-        try:
-            a = result[race_id]            
+        year = int( race_day_data[race_id]["year"] )
+        month = int( race_day_data[race_id]["month"] )
+        day = int( race_day_data[race_id]["day"] )
+        race_num = race_id[10:12]
+        place_num = str( race_info_data[race_id]["place"] )
+        url = base_url + str( year )
+        url = url_connect( url, str( month ) )
+        url = url_connect( url, str( day ) )
+        url = url_connect( url, place_num )
+        url += race_num
+        url += "/syutsuba.html"
+
+        data = data_get( driver, url )
+        time.sleep( 1 )
+    
+        if len( data ) == 0:
             continue
-        except:
-            check = False
-        
-        try:
-            base_cname = jra_id_get( race_id, race_day[race_id] )
-        except:
-            continue
 
-        for i in range( 0, 256 ):
-            d = hex(i)[2:].upper()
+        result[race_id] = data
 
-            if len( d ) == 1:
-                d = "0" + d
-        
-            cname = base_cname + d
-            req = req_create( cname )
-            res = post_connect( req )
-            data = gzip.decompress( res.read() )
-            html_text = data.decode( 'shift_jis' )
-            soup = BeautifulSoup( html_text, "html.parser" )
-            
-            if web_check( soup ):
-                check = True
-                break
-            
-        if check:
-            result[race_id] = data_collect( soup )
-            print( "success {}".format( race_id ) )
-        else:
-            print( "error {}".format( race_id ) )
-
-        lib.dm.pickle_upload( "fuku_odds_data.pickle", result )
-   
-def test():
-    cname = "pw151ou1006202201010120220105Z/98"
-    req = req_create( cname )
-    res = post_connect( req )
-    data = gzip.decompress( res.read() )
-    html_text = data.decode( 'shift_jis' )
-    soup = BeautifulSoup( html_text, "html.parser" )
+    #dm.pickle_upload( "omega_index_data.pickle", result )
 
 main()
+    

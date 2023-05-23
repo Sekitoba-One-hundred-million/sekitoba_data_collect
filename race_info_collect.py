@@ -46,11 +46,10 @@ def main():
     key_list = []
 
     for k in race_data.keys():
-        continue
         race_id = lib.id_get( k )
         year = race_id[0:4]
 
-        if not year == lib.test_year:
+        if not year == lib.test_years[-1]:
             continue
 
         url_list.append( k )
