@@ -7,94 +7,75 @@ import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 def first_time_get( soup ):
-    result = []
+    result = {}
     count = 0
-    dl_tag = soup.findAll( "dl" )
+    div_tag = soup.find( "body" ).findAll( "div" )
 
-    for dl in dl_tag:
-        dl_class_name = dl.get( "class" )
+    for div in div_tag:
+        div_class_name = div.get( "class" )
+
+        if div_class_name == None or len( div_class_name ) == 0 or not div_class_name[0] == "HorseList_Wrapper":
+            continue
         
-        if not dl_class_name == None and not len( dl_class_name ) == 0 and dl_class_name[0] == "HorseList":
-            horce_id = ""
-            dt_tag = dl.findAll( "dt" )
-            
-            for dt in dt_tag:
-                dt_class_name = dt.get( "class" )
+        dl_tag = div.findAll( "dl" )
 
-                if not dt_class_name == None and not len( dt_class_name ) == 0 and dt_class_name[0] == "Horse02":
+        for dl in dl_tag:
+            dl_class_name = dl.get( "class" )
+
+            if dl_class_name == None or len( dl_class_name ) == 0 or not dl_class_name[0] == "HorseList":
+                continue
+
+            dt_tag = dl.findAll( "dt" )
+
+            try:
+                horce_num = int( dt_tag[1].text )
+            except:
+                continue
+
+            lib.dic_append( result, horce_num, [] )
+            ul_tag = dl.findAll( "ul" )
+
+            for ul in ul_tag:
+                ul_class_name = ul.get( "class" )
+
+                if ul_class_name == None or len( ul_class_name ) == 0 or not ul_class_name[0] == "Past_Direction":
+                    continue
+
+                li_tag = ul.findAll( "li" )
+
+                for li in li_tag:
+                    past_div_tag = li.findAll( "div" )
+
                     try:
-                        href = dt.find( "a" ).get( "href" )
-                        horce_id = href.split( "/" )[-2]
+                        first_up3 = float( past_div_tag[6].text.split( " " )[1].replace( "前", "" ) )
                     except:
                         continue
 
-            if len( horce_id ) == 0:
-                continue
-
-            dd_tag = dl.findAll( "dd" )
-
-            for dd in dd_tag:
-                dd_class_name = dd.get( "class" )
-
-                if not dd_class_name == None and len( dd_class_name ) == 3 and dd_class_name[0] == "Past_Wrapper":
-                    li_tag = dd.findAll( "li" )
-                    
-                    for li in li_tag:
-                        li_class_name = li.get( "class" )
-                        
-                        if not li_class_name == None and not len( li_class_name ) == 0 and li_class_name[0] == "Past":
-                            div_tag = li.findAll( "div" )
-                            
-                            if not len( div_tag ) == 8:
-                                continue
-
-                            race_id = ""
-                            span_tag = div_tag[2].findAll( "span" )
-
-                            for span in span_tag:
-                                span_class_name = span.get( "class" )
-                                
-                                if not span_class_name == None and not len( span_class_name ) == 0 and span_class_name[0] == "RaceName":
-                                    print( span.find( "a" ).get( "href" ) )
-                                    try:
-                                        href = span.find( "a" ).get( "href" )
-                                        race_id = href.split( "/" )[-2]
-                                    except:
-                                        continue
-
-                            print( race_id )
-            return 0
-
+                    result[horce_num].append( first_up3 )
     return result
 
 def main():
-    result = {}#dm.pickle_load( "first_up3_halon.pickle" )
+    result = dm.pickle_load( "first_up3_halon.pickle" )
     base_url = "https://race.netkeiba.com/race/newspaper.html?race_id="
     race_data = dm.pickle_load( "race_data.pickle" )
     
     driver = webdriver.Chrome()
     driver = lib.login( driver )
-    url = "https://race.netkeiba.com/race/newspaper.html?race_id=202204030612"
-    driver, _ = lib.driver_request( driver, url )
-    time.sleep( 3 )
-    html = driver.page_source.encode('utf-8')
-    soup = BeautifulSoup( html, "html.parser" )
-    first_time_get( soup )
-    return
-    count = 1
+    count = 0
 
     for k in tqdm( race_data.keys() ):
         race_id = lib.id_get( k )
+        
+        if race_id in result:
+            continue
+
         url = base_url + race_id
         driver, _ = lib.driver_request( driver, url )
-        time.sleep( 1 )
+        time.sleep( 3 )
         html = driver.page_source.encode('utf-8')
-        soup = BeautifulSoup( html, "html.parser" )
-
-        try:
-            result[race_id]
-        except:
-            result[race_id] = first_time_get( soup )
+        soup = BeautifulSoup( html, "html.parser" )        
+        result[race_id] = first_time_get( soup )
+        count += 1
 
         if count % 100:
             dm.pickle_upload( "first_up3_halon.pickle", result )
