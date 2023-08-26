@@ -19,7 +19,7 @@ def data_collect( data ):
           and "OikiriDataHead" in class_name[0]:
             td_tag = tr.findAll( "td" )
             
-            if not len( td_tag ) == 13:
+            if len( td_tag ) < 13:
                 continue
 
             key = td_tag[1].text
@@ -61,10 +61,10 @@ def main():
     for k in race_data.keys():
         race_id = lib.id_get( k )
 
-        if not race_id in result:
-            url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
-            key_list.append( race_id )
-            url_list.append( { "url": url, "cookie": cookie } )
+        #if not race_id in result:
+        url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id
+        key_list.append( race_id )
+        url_list.append( { "url": url, "cookie": cookie } )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
 
