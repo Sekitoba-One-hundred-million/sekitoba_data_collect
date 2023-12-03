@@ -3,12 +3,17 @@ import datetime
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import timeout_decorator
 
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 def data_get( driver, url ):
-    driver, _ = lib.driver_request( driver, url )
+    driver, check = lib.driver_request( driver, url )
+
+    if not check:
+        return None
+    
     time.sleep( 1 )
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )      
@@ -56,10 +61,10 @@ def data_get( driver, url ):
 
     return odds_data
 
-def main():
+@timeout_decorator.timeout( 10 )
+def main( result ):
     base_url = "https://race.netkeiba.com/odds/index.html?type=b4&race_id="
     driver = webdriver.Chrome()
-    result = {}
     race_data = dm.pickle_load( "race_data.pickle" )
 
     for k in tqdm( race_data.keys() ):
@@ -69,14 +74,33 @@ def main():
         if not year in lib.test_years:
             continue
 
+        if race_id in result:
+            continue
+
         url = "https://race.netkeiba.com/odds/index.html?type=b4&race_id={}&housiki=c0".format( race_id )
-        result[race_id] = data_get( driver, url )
+        odds_data = data_get( driver, url )
+
+        if odds_data == None:
+            return False
+        
+        result[race_id] = odds_data
 
         if len( result ) % 100 == 0:
             dm.pickle_upload( "baren_odds_data.pickle", result )
 
     driver.quit()
     dm.pickle_upload( "baren_odds_data.pickle", result )
+    return True
 
-main()
+if __name__ == "__main__":
+    result = dm.pickle_load( "baren_odds_data.pickle" )
+    print( len( result ) )
     
+    while 1:
+        check = main( result )
+
+        if check:
+            break
+
+        print( len( result ) )
+        dm.pickle_upload( "baren_odds_data.pickle", result )
