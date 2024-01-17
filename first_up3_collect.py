@@ -61,6 +61,7 @@ def main():
     base_url = "https://race.netkeiba.com/race/newspaper.html?race_id="
     race_data = dm.pickle_load( "race_data.pickle" )
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+    race_day = dm.pickle_load( "race_day.pickle" )
     driver = lib.driver_start()
     driver = lib.login( driver )
     count = 0
@@ -78,8 +79,7 @@ def main():
             collect_race_id_list.append( race_id )
         else:
             horce_id = list( race_data[k].keys() )[0]
-            current_data, _ = lib.race_check( horce_data[horce_id],
-                                             year, day, num, race_place_num )
+            current_data, _ = lib.race_check( horce_data[horce_id], race_day[race_id] )
             cd = lib.current_data( current_data )
 
             if not cd.race_check() or cd.new_check():
@@ -101,7 +101,6 @@ def main():
 
     for race_id in tqdm( collect_race_id_list ):
         url = base_url + race_id
-
         driver, _ = lib.driver_request( driver, url )
         time.sleep( 2 )
         html = driver.page_source.encode('utf-8')
@@ -115,5 +114,11 @@ def main():
 
     driver.close()
     dm.pickle_upload( "first_up3_halon.pickle", result )
-    
-main()
+
+if __name__ == "__main__":
+    while 1:
+        try:
+            main()
+            break
+        except:
+            pass
