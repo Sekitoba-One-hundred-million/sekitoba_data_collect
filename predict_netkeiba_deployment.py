@@ -1,7 +1,9 @@
 import copy
+import json
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -70,6 +72,7 @@ def main():
 
     for k in add_data.keys():
         result[k] = add_data[k]
+        ps.RaceData().update_data( "predict_netkeiba_deployment", json.dumps( add_data[k], ensure_ascii = False ), k )
     
     dm.pickle_upload( 'predict_netkeiba_deployment_data.pickle', result )
 

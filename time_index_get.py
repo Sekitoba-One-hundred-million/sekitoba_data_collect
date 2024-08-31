@@ -1,6 +1,8 @@
+import json
 from bs4 import BeautifulSoup
 import requests
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -37,13 +39,11 @@ def main():
         url_list.append( { "url": url, "cookie": cookie } )
 
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
-    result = dm.pickle_load( "time_index_data.pickle" )
-
-    if result == None:
-        result = {}
+    result = {}#dm.pickle_load( "time_index_data.pickle" )
 
     for k in add_data.keys():
         result[k] = add_data[k]
+        ps.HorceData().update_data( "time_index", json.dumps( result[k], ensure_ascii = False ), k )
         
     dm.pickle_upload( "time_index_data.pickle", result )
 

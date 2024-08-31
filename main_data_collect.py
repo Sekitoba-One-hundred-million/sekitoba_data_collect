@@ -73,7 +73,7 @@ def race_data_collect():
     base_url = "https://race.netkeiba.com/race/shutuba.html?race_id="
     test_year = int( lib.test_years[-1] )
 
-    for y in range( 2009, 2023 ):
+    for y in range( 2007, 2009 ):
         print( y )
         for p in range( 1, 11 ):
             print( p )
@@ -83,7 +83,6 @@ def race_data_collect():
                         race_id = str( y ) + num_check( str( p ) ) + num_check( str( m ) ) + num_check( str( d ) ) + num_check( str( r ) )
                         url = base_url + race_id                        
                         race_data = race_data_search( url, horce_url )
-                        
                         if len( race_data ) != 0:
                             race_data_storage[url] = race_data
                         else:
@@ -92,17 +91,23 @@ def race_data_collect():
     return race_data_storage, horce_url
 
 def main():    
-    race_data, horce_url = race_data_collect()
+    update_race_data, horce_url = race_data_collect()
+    race_data = dm.pickle_load( "race_data.pickle" )
+    horce_url = {}
+
+    for k in update_race_data.keys():
+        race_data[k] = update_race_data[k]
+        
+        for horce_id in update_race_data[k].keys():
+            horce_url[horce_id] = "https://db.netkeiba.com/horse/{}".format( horce_id )
+
     dm.pickle_upload( "race_data.pickle", race_data )
     horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
-    jockey_name_check = {}
-    parent_name_data = {}
-    parent_url = {}
-    race_data_key = np.array( [] )
 
-    for k in tqdm( horce_url.keys() ):
-        url = horce_url[k]
-        horce_data_storage[k] = horse_data_collect( url )
+    for horce_id in tqdm( horce_url.keys() ):
+        if not horce_id in horce_data_storage:
+            url = horce_url[horce_id]
+            horce_data_storage[horce_id] = horse_data_collect( url )
     
     dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )
     

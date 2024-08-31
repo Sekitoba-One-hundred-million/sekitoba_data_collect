@@ -1,6 +1,8 @@
+import json
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -46,6 +48,10 @@ def main():
         key_list.append( jockey_id )
 
     result = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+
+    for jockey_id in result.keys():
+        ps.JockeyData().update_data( "jockey_year_rank", json.dumps( result[jockey_id], ensure_ascii = False ), jockey_id )
+    
     dm.pickle_upload( "jockey_year_rank_data.pickle", result )
 
 if __name__ == "__main__":

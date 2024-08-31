@@ -1,6 +1,8 @@
+import json
 from bs4 import BeautifulSoup
 import requests
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -33,11 +35,23 @@ def main():
     url_list = []
 
     for k in horce_data.keys():
+        try:
+            year = int( k[0:4] )
+        except:
+            continue
+        
+        if 2009 < year:
+            continue
+        
         key_list.append( k )
         url = "https://db.netkeiba.com/horse/" + k
         url_list.append( { "url": url, "cookie": cookie } )
 
     result = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+
+    for horce_id in result.keys():
+        ps.HorceData().update_data( "baba_index", json.dumps( result[horce_id], ensure_ascii = False ), horce_id )
+        
     dm.pickle_upload( "baba_index_data.pickle", result )
 
 if __name__ == "__main__":

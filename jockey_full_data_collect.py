@@ -53,7 +53,7 @@ def data_collect( base_url ):
         count += 1
     
     return result
-        
+
 def main():
     base_url = "https://db.netkeiba.com/?pid=jockey_detail&id="
     check_str = "/jockey/"
@@ -61,7 +61,7 @@ def main():
     url_list = []
     key_list = []
     jockey_id_data = dm.pickle_load( "jockey_id_data.pickle" )
-    
+
     for k in jockey_id_data.keys():
         jockey_id = k
         url = base_url + jockey_id + "&page="

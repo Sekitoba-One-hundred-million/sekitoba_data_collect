@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 import sekitoba_library as lib
+import sekitoba_psql as ps
 import sekitoba_data_manage as dm
 
 def data_get( driver, url ):
@@ -13,6 +14,7 @@ def data_get( driver, url ):
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )      
     table_tag = soup.findAll( "table" )
+    base_num = 1
     odds_data = {}
 
     for table in table_tag:
@@ -40,57 +42,42 @@ def data_get( driver, url ):
             if len( class_name ) == 2 and class_name[0] == "Odds" and class_name[1] == "Popular":
                 try:
                     odds_text = lib.text_replace( td.text )
-                    min_odds = ""
-                    max_odds = ""
-                    max_flag = False
-
-                    for i in range( 0, len( odds_text ) ):
-                        if not max_flag:
-                            min_odds += odds_text[i]
-
-                            if not i == 0 and odds_text[i-1] == ".":
-                                max_flag = True
-                        else:
-                            max_odds += odds_text[i]
-
-                    min_odds = float( min_odds )
-                    max_odds = float( max_odds )
+                    odds = float( odds_text )
                 except:
                     before_num = -1
                     continue
 
                 if not before_num == -1:
-                    instance_odds_data[before_num] = { "min": min_odds, "max": max_odds }
+                    instance_odds_data[before_num] = odds
                     before_num = -1
 
         if len( instance_odds_data ) == 0:
             continue
 
-        base_num = min( instance_odds_data.keys() ) - 1
         odds_data[base_num] = instance_odds_data
+        base_num += 1
 
     return odds_data
 
 def main():
+    race_id_list = ps.RaceData().get_all_race_id()
     driver = lib.driver_start()
     result = {}
-    race_data = dm.pickle_load( "race_data.pickle" )
 
-    for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+    for race_id in tqdm( race_id_list ):
         year = race_id[0:4]
         
         if not year in lib.test_years or race_id in result:
             continue
 
-        url = "https://race.netkeiba.com/odds/index.html?type=b5&race_id={}&housiki=c0".format( race_id )
+        url = "https://race.netkeiba.com/odds/index.html?type=b6&race_id={}&housiki=c0".format( race_id )
         result[race_id] = data_get( driver, url )
 
         if len( result ) % 100 == 0:
-            dm.pickle_upload( "wide_odds_data.pickle", result )
+            dm.pickle_upload( "quinella_odds_data.pickle", result )
 
     driver.quit()
-    dm.pickle_upload( "wide_odds_data.pickle", result )
+    dm.pickle_upload( "quinella_odds_data.pickle", result )
 
 main()
     

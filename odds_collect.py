@@ -46,11 +46,7 @@ def money_get( url ):
     return result        
 
 def main():
-    #result = dm.pickle_load( "odds_data.pickle" )
-    
-    #if result == None:
-    result = {}
-        
+    result = dm.pickle_load( "odds_data.pickle" )    
     base_url = "https://race.netkeiba.com/race/result.html?race_id="
 
     race_data = dm.pickle_load( "race_data.pickle" )

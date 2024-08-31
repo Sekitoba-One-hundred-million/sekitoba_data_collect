@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -47,6 +48,7 @@ def main():
 
     for k in add_data.keys():
         result[k] = add_data[k]
+        ps.RaceData().update_data( "predict_netkeiba_pace", add_data[k], k )
     
     dm.pickle_upload( 'predict_netkeiba_pace_data.pickle', result )
 

@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -23,7 +24,11 @@ def data_get( url ):
                 str_dist = span_tag[0].text.replace( " ", "" )
                 _, kind = lib.dist( str_dist )
                 dist = int( lib.k_dist( str_dist ) * 1000 )
-                baba = lib.baba( span_tag[2].text.split( ":" )[1] )
+                try:
+                    baba = lib.baba( span_tag[2].text.split( ":" )[1] )
+                except:
+                    baba = -1
+                    
                 result["kind"] = kind
                 result["dist"] = dist
                 result["baba"] = baba
@@ -33,12 +38,13 @@ def data_get( url ):
                 place = lib.place_num( span_tag[1].text )
                 result["place"] = place
 
+    print( url, result )
     return result
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
     result = dm.pickle_load( "race_info_data.pickle" )
-
+    
     if result == None:
         result = {}
     
@@ -47,19 +53,23 @@ def main():
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
-        year = race_id[0:4]
 
-        if not year == lib.test_years[-1]:
-            continue
+        #if race_id in result:
+        #    continue
 
         url_list.append( k )
         key_list.append( race_id )
 
+    race_data = ps.RaceData()
     add_data = lib.thread_scraping( url_list, key_list ).data_get( data_get )
+    return
     rd = dm.pickle_load( "race_course_data.pickle" )
     
     for k in add_data.keys():
         result[k] = add_data[k]
+
+        for kind in add_data[k].keys():
+            race_data.update_data( kind, add_data[k][kind], k )
 
     for k in result.keys():
         try:
