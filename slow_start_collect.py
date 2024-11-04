@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( data ):
     result = {}
@@ -33,7 +33,7 @@ def data_collect( data ):
 
 def main():
     file_name = "slow_start_data.pickle"
-    cookie = lib.netkeiba_login()
+    cookie = lib.netkeibaLogin()
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     key_list = []
     url_list = []

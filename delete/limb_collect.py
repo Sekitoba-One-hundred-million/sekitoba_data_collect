@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def html_analyze( html ):
     result = {}
@@ -53,13 +53,13 @@ def main():
     
     for k in tqdm( race_data.keys() ):
         count += 1
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         
         try:
             a = result[race_id]
         except:
             url = base_url + race_id + "&rf=shutuba_submenu"
-            driver, _ = lib.driver_request( driver, url )
+            driver, _ = lib.driverRequest( driver, url )
             time.sleep( 1 )
             html = driver.page_source.encode('utf-8')
             data = html_analyze( html )

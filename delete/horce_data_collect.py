@@ -2,8 +2,8 @@ import sys
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def http_analyze( url, horce_data, trainer_url, h_name ):
     data = {}

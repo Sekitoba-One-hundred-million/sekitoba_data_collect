@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 
 def data_collect( url ):
@@ -37,7 +37,7 @@ def main():
     key_list = []
 
     for k in race_data.keys():        
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
 
         if race_id in result:

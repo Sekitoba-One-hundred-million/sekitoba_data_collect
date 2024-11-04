@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def father_url_get( soup ):
     table_tag = soup.findAll( "table" )

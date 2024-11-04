@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_get( url ):
     result = {}
@@ -21,7 +21,7 @@ def data_get( url ):
                 a_tag = td_tag[2].find( "a" )
                 horce_id = a_tag.get( "href" ).split( "&" )[0].split( "horse_id=" )[-1]
                 span_tag = td_tag[3].findAll( "span" )
-                condition_devi = float( lib.text_replace( span_tag[0].text ) )
+                condition_devi = float( lib.textReplace( span_tag[0].text ) )
                 result[horce_id] = condition_devi
             except:
                 continue
@@ -40,7 +40,7 @@ def main():
     key_data = []
     
     for k in race_data.keys():
-        race_id = lib.id_get(k)
+        race_id = lib.idGet(k)
         url = base_url + race_id
 
         if not race_id in result:

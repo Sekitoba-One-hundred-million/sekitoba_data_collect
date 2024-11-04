@@ -4,12 +4,12 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-import sekitoba_library as lib
-import sekitoba_psql as ps
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaPsql as ps
+import SekitobaDataManage as dm
 
 def data_get( driver, url ):
-    driver, _ = lib.driver_request( driver, url )
+    driver, _ = lib.driverRequest( driver, url )
     time.sleep( 1 )
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )      
@@ -35,13 +35,13 @@ def data_get( driver, url ):
 
             if len( class_name ) == 1 and class_name[0] == "Waku_Normal":
                 try:
-                    before_num = int( lib.text_replace( td.text ) )
+                    before_num = int( lib.textReplace( td.text ) )
                 except:
                     continue
 
             if len( class_name ) == 2 and class_name[0] == "Odds" and class_name[1] == "Popular":
                 try:
-                    odds_text = lib.text_replace( td.text )
+                    odds_text = lib.textReplace( td.text )
                     odds = float( odds_text )
                 except:
                     before_num = -1
@@ -61,7 +61,7 @@ def data_get( driver, url ):
 
 def main():
     race_id_list = ps.RaceData().get_all_race_id()
-    driver = lib.driver_start()
+    driver = lib.driverStart()
     result = {}
 
     for race_id in tqdm( race_id_list ):

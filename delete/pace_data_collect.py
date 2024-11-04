@@ -31,7 +31,7 @@ def main():
     key_data = []
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         try:
             a = result[race_id]

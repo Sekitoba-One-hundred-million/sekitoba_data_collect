@@ -3,8 +3,8 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_get( soup ):
     result = {}
@@ -16,8 +16,8 @@ def data_get( soup ):
         if not class_name == None and class_name[0] == "Odds_Table":
             tr_tag = table.findAll( "tr" )
             try:
-                key_min_horce_num = lib.text_replace( tr_tag[0].text )
-                lib.dic_append( result, key_min_horce_num, {} )
+                key_min_horce_num = lib.textReplace( tr_tag[0].text )
+                lib.dicAppend( result, key_min_horce_num, {} )
             except:
                 continue
             
@@ -25,8 +25,8 @@ def data_get( soup ):
                 td_tag = tr_tag[i].findAll( "td" )
                 
                 if len( td_tag ) == 2:
-                    key_max_horce_num = lib.text_replace( td_tag[0].text )
-                    odds = lib.text_replace( td_tag[1].text )
+                    key_max_horce_num = lib.textReplace( td_tag[0].text )
+                    odds = lib.textReplace( td_tag[1].text )
                     try:
                         point = odds.index( "." ) + 2
                         min_odds = float( odds[0:point] )
@@ -53,7 +53,7 @@ def main():
     count = 0
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         
         if year in lib.test_years and not race_id in result:
@@ -62,7 +62,7 @@ def main():
     for race_id in tqdm( check_race_id ):
         count += 1
         url = base_url + race_id
-        driver, _ = lib.driver_request( driver, url )
+        driver, _ = lib.driverRequest( driver, url )
         time.sleep( 1 )
         html = driver.page_source.encode('utf-8')
         soup = BeautifulSoup( html, "html.parser" )

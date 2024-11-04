@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( base_url ):
     result = {}
@@ -30,8 +30,8 @@ def data_collect( base_url ):
                 except:
                     horce_id = ""
                     
-                lib.dic_append( result, key_day, {} )
-                lib.dic_append( result[key_day], key_race_num, {} )
+                lib.dicAppend( result, key_day, {} )
+                lib.dicAppend( result[key_day], key_race_num, {} )
                 result[key_day][key_race_num]["place"] = td_tag[1].text
                 result[key_day][key_race_num]["weather"] = td_tag[2].text
                 result[key_day][key_race_num]["all_horce_num"] = td_tag[6].text

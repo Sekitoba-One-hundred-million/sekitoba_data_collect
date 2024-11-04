@@ -4,9 +4,9 @@ from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def first_time_get( soup ):
     result = {}
@@ -34,7 +34,7 @@ def first_time_get( soup ):
             except:
                 continue
 
-            lib.dic_append( result, horce_num, {} )
+            lib.dicAppend( result, horce_num, {} )
             ul_tag = dl.findAll( "ul" )
 
             for ul in ul_tag:
@@ -64,14 +64,14 @@ def main():
     race_data = dm.pickle_load( "race_data.pickle" )
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     race_day = dm.pickle_load( "race_day.pickle" )
-    driver = lib.driver_start()
+    driver = lib.driverStart()
     driver = lib.login( driver )
     count = 0
 
     collect_race_id_list = []
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -81,10 +81,10 @@ def main():
             collect_race_id_list.append( race_id )
         else:
             horce_id = list( race_data[k].keys() )[0]
-            current_data, _ = lib.race_check( horce_data[horce_id], race_day[race_id] )
-            cd = lib.current_data( current_data )
+            current_data, _ = lib.raceCheck( horce_data[horce_id], race_day[race_id] )
+            cd = lib.CurrentData( current_data )
 
-            if not cd.race_check() or cd.new_check():
+            if not cd.raceCheck() or cd.newCheck():
                 continue
 
             if len( result[race_id] ) == 0:
@@ -103,7 +103,7 @@ def main():
 
     for race_id in tqdm( collect_race_id_list ):
         url = base_url + race_id
-        driver, _ = lib.driver_request( driver, url )
+        driver, _ = lib.driverRequest( driver, url )
         time.sleep( 2 )
         html = driver.page_source.encode('utf-8')
         soup = BeautifulSoup( html, "html.parser" )

@@ -2,9 +2,9 @@ import json
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def horse_data_collect( url ):
     horce_data = []
@@ -37,7 +37,7 @@ def horse_data_collect( url ):
                 
     return horce_data
     
-def parent_id_get( url ):
+def parent_idGet( url ):
     result = {}
     result["father"] = ""
     result["mother"] = ""
@@ -77,7 +77,7 @@ def main():
         url_list.append( "https://db.netkeiba.com/horse/" + horce_id )
         key_list.append( horce_id )
         
-    add_data = lib.thread_scraping( url_list, key_list ).data_get( parent_id_get )
+    add_data = lib.thread_scraping( url_list, key_list ).data_get( parent_idGet )
 
     for k in add_data.keys():
         parent_id_data[k] = add_data[k]

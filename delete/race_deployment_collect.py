@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 from tqdm import tqdm
 from bs4 import BeautifulSoup
@@ -7,7 +7,7 @@ from selenium import webdriver
 
 def data_get( driver, url ):
     result = []
-    driver, _ = lib.driver_request( driver, url )
+    driver, _ = lib.driverRequest( driver, url )
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )        
 
@@ -42,7 +42,7 @@ def main():
     driver = webdriver.Chrome()
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         
         if year == "2020":

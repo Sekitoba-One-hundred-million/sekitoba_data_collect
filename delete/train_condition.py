@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def horce_name_get( soup ):
     result = []
@@ -51,17 +51,17 @@ def main():
 
     for k in tqdm( race_data.keys() ):
         try:
-            a = result[id_get(k)]
+            a = result[idGet(k)]
         except:
-            url = base_url + lib.id_get( k ) + "&type=3&rf=shutuba_submenu"
+            url = base_url + lib.idGet( k ) + "&type=3&rf=shutuba_submenu"
             r, _ = lib.request( url )
             soup = BeautifulSoup( r.content, "html.parser" )
             h_name = horce_name_get( soup )
             c_data = train_condition_get( soup )
-            result[lib.id_get(k)] = {}
+            result[lib.idGet(k)] = {}
 
             for i in range( 0, len( h_name ) ):
-                result[lib.id_get(k)][h_name[i]] = c_data[i]
+                result[lib.idGet(k)][h_name[i]] = c_data[i]
             
             for i in range( 0, len( c_data ) ):
                 try:
@@ -74,8 +74,8 @@ def main():
                 except:
                     c_check["eveluation"][c_data[i]["eveluation"]] = len( c_check["eveluation"] ) + 1
 
-                result[lib.id_get(k)][h_name[i]]["comment"] = c_check["comment"][c_data[i]["comment"]]
-                result[lib.id_get(k)][h_name[i]]["eveluation"] = c_check["eveluation"][c_data[i]["eveluation"]]
+                result[lib.idGet(k)][h_name[i]]["comment"] = c_check["comment"][c_data[i]["comment"]]
+                result[lib.idGet(k)][h_name[i]]["eveluation"] = c_check["eveluation"][c_data[i]["eveluation"]]
                 
 
     dm.pickle_upload( "train_condition.pickle", result )

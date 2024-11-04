@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( data ):
     result = []
@@ -66,12 +66,12 @@ def main():
         result = {}
     
     race_data = dm.pickle_upload( "race_data.pickle" )
-    cookie = lib.netkeiba_login()
+    cookie = lib.netkeibaLogin()
     key_list = []
     url_list = []
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         try:
             result[race_id]

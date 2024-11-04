@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 # 1: サンダーサイレンス
 # 2: ターントゥ
@@ -40,12 +40,12 @@ def data_collect( data ):
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
     result = dm.pickle_load( "horce_blood_type_data.pickle" )
-    cookie = lib.netkeiba_login()
+    cookie = lib.netkeibaLogin()
     key_list = []
     url_list = []
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         if not race_id in result:
             url = "https://race.netkeiba.com/race/bias.html?race_id=" + race_id

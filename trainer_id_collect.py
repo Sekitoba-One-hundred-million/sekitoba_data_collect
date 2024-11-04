@@ -1,9 +1,9 @@
 import copy
 from bs4 import BeautifulSoup
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( url ):
     result = {}
@@ -53,7 +53,7 @@ def main():
 
     for k in race_data.keys():
         url = k
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         if not race_id in race_trainer_id_data:
             key_list.append( race_id )

@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def time_get( soup ):
     race_time = 0
@@ -32,7 +32,7 @@ def dist_get( soup ):
         if not class_name == None \
           and class_name[0] == "RaceData01":
             span = div.find( "span" )
-            dist = int( lib.k_dist( span.text ) * 1000 )
+            dist = int( lib.kDist( span.text ) * 1000 )
 
             if not dist == 0:
                 break
@@ -58,7 +58,7 @@ def main():
     key_data = []
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
 
         if not year == lib.test_years[-1]:

@@ -1,4 +1,4 @@
-import sekitoba_library as lib
+import SekitobaLibrary as lib
 
 import requests
 import time

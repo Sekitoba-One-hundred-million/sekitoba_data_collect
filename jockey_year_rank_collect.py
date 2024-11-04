@@ -2,9 +2,9 @@ import json
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( url ):
     result = {}
@@ -25,8 +25,8 @@ def data_collect( url ):
                     year = 0
 
                     try:
-                        year = int( lib.text_replace( td_tag[0].text ) )
-                        rank = int( lib.text_replace( td_tag[1].text ) )
+                        year = int( lib.textReplace( td_tag[0].text ) )
+                        rank = int( lib.textReplace( td_tag[1].text ) )
                     except:
                         continue
 

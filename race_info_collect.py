@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_get( url ):
     result = {}
@@ -23,7 +23,7 @@ def data_get( url ):
                 span_tag = div.findAll( "span" )
                 str_dist = span_tag[0].text.replace( " ", "" )
                 _, kind = lib.dist( str_dist )
-                dist = int( lib.k_dist( str_dist ) * 1000 )
+                dist = int( lib.kDist( str_dist ) * 1000 )
                 try:
                     baba = lib.baba( span_tag[2].text.split( ":" )[1] )
                 except:
@@ -35,7 +35,7 @@ def data_get( url ):
                 
             elif class_name[0] == "RaceData02":
                 span_tag = div.findAll( "span" )
-                place = lib.place_num( span_tag[1].text )
+                place = lib.placeNum( span_tag[1].text )
                 result["place"] = place
 
     print( url, result )
@@ -52,7 +52,7 @@ def main():
     key_list = []
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         #if race_id in result:
         #    continue

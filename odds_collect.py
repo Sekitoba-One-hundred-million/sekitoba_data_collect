@@ -1,8 +1,8 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def money_get( url ):
     result = {}
@@ -54,8 +54,8 @@ def main():
     key_data = []
     
     for k in race_data.keys():
-        url = base_url + lib.id_get( k ) + "&rf=race_list"
-        race_id = lib.id_get(k)
+        url = base_url + lib.idGet( k ) + "&rf=race_list"
+        race_id = lib.idGet(k)
 
         if not race_id in result:
             url_data.append( url )

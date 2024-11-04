@@ -5,11 +5,11 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import timeout_decorator
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_get( driver, url ):
-    driver, check = lib.driver_request( driver, url )
+    driver, check = lib.driverRequest( driver, url )
 
     if not check:
         return None
@@ -38,13 +38,13 @@ def data_get( driver, url ):
 
             if len( class_name ) == 1 and class_name[0] == "Waku_Normal":
                 try:
-                    before_num = int( lib.text_replace( td.text ) )
+                    before_num = int( lib.textReplace( td.text ) )
                 except:
                     continue
 
             if len( class_name ) == 2 and class_name[0] == "Odds" and class_name[1] == "Popular":
                 try:
-                    odds = float( lib.text_replace( td.text ) )
+                    odds = float( lib.textReplace( td.text ) )
                 except:
                     before_num = -1
                     continue
@@ -68,7 +68,7 @@ def main( result ):
     race_data = dm.pickle_load( "race_data.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         
         if not year in lib.test_years:

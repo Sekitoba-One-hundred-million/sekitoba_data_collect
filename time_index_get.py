@@ -2,9 +2,9 @@ import json
 from bs4 import BeautifulSoup
 import requests
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( data ):
     result = {}
@@ -28,7 +28,7 @@ def data_collect( data ):
     return result
 
 def main():    
-    cookie = lib.netkeiba_login()
+    cookie = lib.netkeibaLogin()
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     key_list = []
     url_list = []

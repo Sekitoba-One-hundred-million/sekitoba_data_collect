@@ -3,9 +3,9 @@ import json
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_get( url ):
     result = []
@@ -32,11 +32,11 @@ def data_get( url ):
                         result.append( copy.deepcopy( instance_list ) )
                         instance_list = []
 
-                    key = lib.text_replace( dt.text )
+                    key = lib.textReplace( dt.text )
                     continue
 
                 try:
-                    instance_list.append( int( lib.text_replace( li.find( "span" ).text ) ) )
+                    instance_list.append( int( lib.textReplace( li.find( "span" ).text ) ) )
                 except:
                     continue
                 
@@ -61,7 +61,7 @@ def main():
     key_data = []
     
     for k in race_data.keys():
-        race_id = lib.id_get(k)
+        race_id = lib.idGet(k)
         url = base_url + race_id
 
         if not race_id in result:

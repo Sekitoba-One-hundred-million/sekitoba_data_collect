@@ -1,12 +1,12 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
     key_list = list( race_data.keys() )
     
     for k in key_list:
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
 
         if year == "2021":

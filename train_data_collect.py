@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def data_collect( data ):
     result = {}
@@ -23,7 +23,7 @@ def data_collect( data ):
                 continue
 
             key = td_tag[1].text
-            lib.dic_append( result, key, { "time": [], "wrap": [], "load": "", "critic": "", "rank": "", "cource": ""  } )
+            lib.dicAppend( result, key, { "time": [], "wrap": [], "load": "", "critic": "", "rank": "", "cource": ""  } )
             li_tag = td_tag[8].findAll( "li" )
             result[key]["cource"] = td_tag[5].text            
             result[key]["load"] = td_tag[10].text
@@ -54,12 +54,12 @@ def main():
         result = {}
     
     race_data = dm.pickle_load( "race_data.pickle" )
-    cookie = lib.netkeiba_login()
+    cookie = lib.netkeibaLogin()
     key_list = []
     url_list = []
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         if not race_id in result:
             url = "https://race.netkeiba.com/race/oikiri.html?race_id=" + race_id

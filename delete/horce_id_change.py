@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
-import sekitoba_data_manage as dm
-import sekitoba_library as lib
+import SekitobaDataManage as dm
+import SekitobaLibrary as lib
 
 def main():
     parser = ArgumentParser()

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def time_get( url ):
     r,_  = lib.request( url )
@@ -38,7 +38,7 @@ def main():
 
     for k in race_data.keys():
         url_list.append( k )
-        key_list.append( lib.id_get( k ) )
+        key_list.append( lib.idGet( k ) )
         
     result = lib.thread_scraping( url_list, key_list ).data_get( time_get )
     dm.pickle_upload( "race_start_time.pickle", result )
