@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+import SekitobaPsql as ps
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
 
@@ -43,23 +44,20 @@ def money_get( url ):
             elif class_name[0] == "Tan3":
                 result["三連単"] = int( m_data[0].replace( ",", "" ) )
 
-    return result        
+    return result
 
 def main():
-    result = dm.pickle_load( "odds_data.pickle" )    
+    result = {}#dm.pickle_load( "odds_data.pickle" )    
     base_url = "https://race.netkeiba.com/race/result.html?race_id="
-
-    race_data = dm.pickle_load( "race_data.pickle" )
+    
+    race_id_list = ps.RaceData().get_all_race_id()
     url_data = []
     key_data = []
     
-    for k in race_data.keys():
-        url = base_url + lib.idGet( k ) + "&rf=race_list"
-        race_id = lib.idGet(k)
-
-        if not race_id in result:
-            url_data.append( url )
-            key_data.append( race_id )
+    for race_id in race_id_list:
+        url = base_url + race_id + "&rf=race_list"
+        url_data.append( url )
+        key_data.append( race_id )
 
     add_data = lib.thread_scraping( url_data, key_data ).data_get( money_get )
 
