@@ -54,15 +54,16 @@ def main():
     url_data = []
     key_data = []
     
-    for race_id in race_id_list:
+    for race_id in tqdm( race_id_list ):
         url = base_url + race_id + "&rf=race_list"
         url_data.append( url )
         key_data.append( race_id )
+        result[race_id] = money_get( url )
 
-    add_data = lib.thread_scraping( url_data, key_data ).data_get( money_get )
+    #add_data = lib.thread_scraping( url_data, key_data ).data_get( money_get )
 
-    for k in add_data.keys():
-        result[k] = add_data[k]
+    #for k in add_data.keys():
+    #    result[k] = add_data[k]
     
     dm.pickle_upload( "odds_data.pickle", result )
     

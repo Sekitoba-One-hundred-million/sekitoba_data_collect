@@ -19,14 +19,14 @@ def data_get( driver, url ):
 
     for table in table_tag:
         class_name = table.get( "class" )
-        
+
         if class_name == None or len( class_name ) == 0 or not class_name[0] == "Odds_Table":
             continue
 
         instance_odds_data = {}
         td_tag = table.findAll( "td" )
         before_num = -1
-        
+
         for td in td_tag:
             class_name = td.get( "class" )
 

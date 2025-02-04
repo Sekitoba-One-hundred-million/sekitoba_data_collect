@@ -10,7 +10,12 @@ def data_collect( base_url ):
     
     while 1:
         url = base_url + str( count )
-        r,_  = lib.request( url )
+        r, requestSuccess  = lib.request( url )
+
+        if not requestSuccess:
+            print( "Error: {}".format( url ) )
+            return result
+        
         soup = BeautifulSoup( r.content, "html.parser" )
         tbody = soup.find( "tbody" )
         if tbody == None:
@@ -56,11 +61,9 @@ def data_collect( base_url ):
 
 def main():
     base_url = "https://db.netkeiba.com/?pid=jockey_detail&id="
-    check_str = "/jockey/"
-
+    jockey_id_data = dm.pickle_load( "jockey_id_data.pickle" )
     url_list = []
     key_list = []
-    jockey_id_data = dm.pickle_load( "jockey_id_data.pickle" )
 
     for k in jockey_id_data.keys():
         jockey_id = k

@@ -6,10 +6,12 @@ from selenium import webdriver
 
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 def data_get( driver, url ):
     driver, _ = lib.driverRequest( driver, url )
     time.sleep( 1 )
+    baseNum = 1
     html = driver.page_source.encode('utf-8')
     soup = BeautifulSoup( html, "html.parser" )      
     table_tag = soup.findAll( "table" )
@@ -64,27 +66,27 @@ def data_get( driver, url ):
                     before_num = -1
 
         if len( instance_odds_data ) == 0:
+            baseNum += 1
             continue
 
-        base_num = min( instance_odds_data.keys() ) - 1
-        odds_data[base_num] = instance_odds_data
+        odds_data[baseNum] = instance_odds_data
+        baseNum += 1
 
     return odds_data
 
 def main():
     driver = lib.driverStart()
-    result = {}
-    race_data = dm.pickle_load( "race_data.pickle" )
+    result = dm.pickle_load( "wide_odds_data.pickle" )
+    raceIdList = ps.RaceData().get_all_race_id()
 
-    for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
-        year = race_id[0:4]
+    for raceId in tqdm( raceIdList ):
+        year = raceId[0:4]
         
-        if not year in lib.test_years or race_id in result:
+        if not year in lib.test_years or raceId in result:
             continue
 
-        url = "https://race.netkeiba.com/odds/index.html?type=b5&race_id={}&housiki=c0".format( race_id )
-        result[race_id] = data_get( driver, url )
+        url = "https://race.netkeiba.com/odds/index.html?type=b5&race_id={}&housiki=c0".format( raceId )
+        result[raceId] = data_get( driver, url )
 
         if len( result ) % 100 == 0:
             dm.pickle_upload( "wide_odds_data.pickle", result )

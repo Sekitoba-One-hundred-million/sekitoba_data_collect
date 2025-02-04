@@ -51,7 +51,7 @@ def main():
 
     for horce_id in result.keys():
         ps.HorceData().update_data( "baba_index", json.dumps( result[horce_id], ensure_ascii = False ), horce_id )
-        
+
     dm.pickle_upload( "baba_index_data.pickle", result )
 
 if __name__ == "__main__":

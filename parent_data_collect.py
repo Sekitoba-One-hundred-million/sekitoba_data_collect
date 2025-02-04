@@ -1,15 +1,21 @@
+import math
 import json
+import random
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-import SekitobaPsql as ps
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 def horse_data_collect( url ):
     horce_data = []
+    r, requestSucess = lib.request( url )
 
-    r, _ = lib.request( url )
+    if not requestSucess:
+        print( "Error: {}".format( data["url"] ) )
+        return horce_data
+    
     soup = BeautifulSoup( r.content, "html.parser" )
     tr_tag = soup.findAll( "tr" )
 
@@ -36,85 +42,38 @@ def horse_data_collect( url ):
                 horce_data.append( data_list )
                 
     return horce_data
-    
-def parent_idGet( url ):
-    result = {}
-    result["father"] = ""
-    result["mother"] = ""
-    
-    r, _ = lib.request( url )
-    soup = BeautifulSoup( r.content, "html.parser" )
-    td_tag = soup.findAll( "td" )
-
-    for td in td_tag:
-        rowspan = td.get( "rowspan" )
-
-        if not rowspan == None \
-          and rowspan == "2":
-            a = td.find( "a" )
-            p_id = a.get( "href" ).split( "/" )[3]
-            
-            if len( result["father"] ) == 0:
-                result["father"] = p_id
-            else:
-                result["mother"] = p_id
-
-    return result
 
 def main():
-    parent_id_data = dm.pickle_load( "parent_id_data.pickle" )
-    horce_data_storage = dm.pickle_load( "horce_data_storage.pickle" )
-    
-    url_list = []
-    key_list = []
+    horceData = ps.HorceData()
+    data = horceData.get_select_all_data( "parent_id" )
+    parentKeyData = {}
 
-    for k in horce_data_storage.keys():
-        horce_id = k
-
-        if horce_id in parent_id_data:
+    for horce_id in data.keys():
+        if not type( data[horce_id] ) == str:
+            continue
+            
+        data[horce_id] = json.loads( data[horce_id] )
+        
+        if type( data[horce_id] ) == int:
             continue
         
-        url_list.append( "https://db.netkeiba.com/horse/" + horce_id )
-        key_list.append( horce_id )
-        
-    add_data = lib.thread_scraping( url_list, key_list ).data_get( parent_idGet )
+        mother_id = data[horce_id]["mother"]
+        father_id = data[horce_id]["father"]
 
-    for k in add_data.keys():
-        parent_id_data[k] = add_data[k]
-        ps.HorceData().update_data( "parent_id", json.dumps( add_data[horce_id] ), horce_id )
-    
-    dm.pickle_upload( "parent_id_data.pickle", parent_id_data )
+        if not len( mother_id ) == 0 and not mother_id in data:
+            parentKeyData[mother_id] = True
 
-    url_list.clear()
-    key_list.clear()
-    
-    for k in add_data.keys():
-        f_id = parent_id_data[k]["father"]
-        m_id = parent_id_data[k]["mother"]
+        if not len( father_id ) == 0 and not father_id in data:
+            parentKeyData[father_id] = True
 
-        if not m_id in horce_data_storage:
-            try:
-                int( f_id )
-                url_list.append( "https://db.netkeiba.com/horse/" + f_id )
-                key_list.append( f_id )
-            except:
-                f_id = 0
+    urlList = []
+    parentIdList = list( parentKeyData.keys() )
 
-        if m_id in horce_data_storage:
-            try:
-                int( m_id )
-                url_list.append( "https://db.netkeiba.com/horse/" + m_id )
-                key_list.append( m_id )
-            except:
-                m_id = 0
-                
-    parent_data = lib.thread_scraping( url_list, key_list ).data_get( horse_data_collect )
-    
-    for k in parent_data.keys():
-        horce_data_storage[k] = parent_data[k]
+    for parentId in parentIdList:
+        urlList.append( "https://db.netkeiba.com/horse/{}".format( parentId ) )
 
-    ps.HorceData().insert_data( parent_data )
-    dm.pickle_upload( "parent_data.pickle", parent_data )
-    dm.pickle_upload( "horce_data_storage.pickle", horce_data_storage )    
-    
-main()
+    result = lib.thread_scraping( urlList, parentIdList ).data_get( horse_data_collect )
+    dm.pickle_upload( "parent_horce_data.pickle", result )
+
+if __name__ == "__main__":
+    main()
