@@ -34,7 +34,7 @@ def first_time_get( soup ):
             except:
                 continue
 
-            lib.dicAppend( result, horce_num, {} )
+            lib.dic_append( result, horce_num, {} )
             ul_tag = dl.findAll( "ul" )
 
             for ul in ul_tag:
@@ -64,8 +64,8 @@ def main():
     race_data = dm.pickle_load( "race_data.pickle" )
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     race_day = dm.pickle_load( "race_day.pickle" )
-    driver = lib.driverStart()
-    driver = lib.login( driver )
+    driver = lib.driver_start()
+    driver = lib.login( driver )    
     count = 0
 
     collect_race_id_list = []
@@ -118,6 +118,8 @@ def main():
     dm.pickle_upload( "first_up3_halon.pickle", result )
 
 if __name__ == "__main__":
+    main()
+    exit( 0 )
     while 1:
         try:
             main()

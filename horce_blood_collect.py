@@ -16,7 +16,6 @@ blood = { "#C4F2F9": 1, "#C6FFAA": 2, "#E0B7FF": 3, "#FFA6E2": 4,  "#FFD28E": 5,
 
 def data_collect( data ):
     result = {}
-    #r, _ = lib.request( url )
     r, _ = lib.request( data["url"], cookie = data["cookie"] )
     soup = BeautifulSoup( r.content, "html.parser" )    
     tr_tag = soup.findAll( "tr" )
@@ -39,26 +38,25 @@ def data_collect( data ):
 
 def main():
     race_data = dm.pickle_load( "race_data.pickle" )
-    result = dm.pickle_load( "horce_blood_type_data.pickle" )
-    cookie = lib.netkeibaLogin()
+    result = {}#dm.pickle_load( "horce_blood_type_data.pickle" )
+    cookie = lib.netkeiba_login()
     key_list = []
     url_list = []
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
 
         if not race_id in result:
             url = "https://race.netkeiba.com/race/bias.html?race_id=" + race_id
             url_list.append( { "url": url, "cookie": cookie } )
             key_list.append( race_id )
     
-    add_data = lib.thread_scraping( url_list, key_list ).data_get( data_collect )
+    add_data = lib.ThreadScraping( url_list, key_list ).data_get( data_collect )
 
     for k in add_data.keys():
         result[k] = add_data[k]
         
-    dm.pickle_upload( "horce_blood_type_data.pickle", result )
-    
+    dm.pickle_upload( "horce_blood_type_data.pickle", result )    
 
 if __name__ == "__main__":
     main()
