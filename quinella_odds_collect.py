@@ -80,7 +80,16 @@ def main():
 
     for race_id in tqdm( use_race_id_list ):
         url = "https://race.netkeiba.com/odds/index.html?type=b4&race_id={}&housiki=c0".format( race_id )
-        result[race_id] = data_get( driver, url )
+
+        while 1:
+            data = data_get( driver, url )
+
+            if not len( data ) == 0:
+                break
+            else:
+                driver = lib.driver_restart( driver )
+                
+        result[race_id] = data
 
         if len( result ) % 100 == 0:
             dm.pickle_upload( FILE_NAME, result )

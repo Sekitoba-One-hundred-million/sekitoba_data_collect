@@ -45,14 +45,14 @@ def main():
     key_data = []
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         url = base_url + race_id
 
         if not race_id in result:
             url_data.append( url )
             key_data.append( race_id )
 
-    add_data = lib.thread_scraping( url_data, key_data ).data_get( race_money_get )
+    add_data = lib.ThreadScraping( url_data, key_data ).data_get( race_money_get )
 
     for k in add_data.keys():
         result[k] = add_data[k]
