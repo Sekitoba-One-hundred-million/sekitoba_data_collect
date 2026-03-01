@@ -75,7 +75,7 @@ def main():
 
         if year in lib.simu_years and ( not race_id in result or len( result[race_id] ) == 0 ):
             use_race_id_list.append( race_id )
-    
+
     driver = lib.driver_start()
 
     for race_id in tqdm( use_race_id_list ):
@@ -88,7 +88,7 @@ def main():
                 break
             else:
                 driver = lib.driver_restart( driver )
-                
+
         result[race_id] = data
 
         if len( result ) % 100 == 0:
